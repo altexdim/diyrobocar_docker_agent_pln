@@ -69,6 +69,7 @@ RUN cd /donkeycar; git checkout dev; pip install -e .[pc]
 COPY ./rC3car  /root/rC3car
 COPY ./race7  /root/race7
 #------> COPY ./myrace /root/myrace <------
+COPY ./myrace /root/myrace
 
 RUN git clone https://github.com/tawnkramer/gym-donkeycar
 RUN pip install -e gym-donkeycar

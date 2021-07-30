@@ -1,0 +1,67 @@
+Mono path[0] = 'C:/donkeycar/DonkeySimWin/donkey_sim_Data/Managed'
+Mono config path = 'C:/donkeycar/DonkeySimWin/MonoBleedingEdge/etc'
+Initialize engine version: 2020.3.4f1 (0abb6314276a)
+[Subsystems] Discovering subsystems at path C:/donkeycar/DonkeySimWin/donkey_sim_Data/UnitySubsystems
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 2080 Ti (ID=0x1e07)
+    Vendor:   
+    VRAM:     11049 MB
+    Driver:   27.21.14.6589
+Begin MonoManager ReloadAssembly
+- Completed reload, in  0.062 seconds
+D3D11 device created for Microsoft Media Foundation video decoding.
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+UnloadTime: 0.453600 ms
+SDSandbox Server starting.
+
+Server Listening on: 0.0.0.0:9091
+
+Waiting for a connection...
+
+SDSandbox Server starting.
+
+Server Listening on: 0.0.0.0:9092
+
+Waiting for a connection...
+
+Setting up 8 worker threads for Enlighten.
+  Thread -> id: 4484 -> priority: 1 
+  Thread -> id: 6964 -> priority: 1 
+  Thread -> id: 6058 -> priority: 1 
+  Thread -> id: 4fc0 -> priority: 1 
+  Thread -> id: 22c -> priority: 1 
+  Thread -> id: 4448 -> priority: 1 
+  Thread -> id: 6ac4 -> priority: 1 
+  Thread -> id: 5b38 -> priority: 1 
+Waiting for a connection...
+
+client connected.
+
+circuit_launch
+
+loaded scene
+
+Unloading 12 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 5.030800 ms
+found 139 path points. to load
+
+JustOne removing instance.MainThDisp
+
+JustOne removing instance.SandboxServer
+
+Added timer
+
+car loaded.
+
+
+Unloading 34 unused Assets to reduce memory usage. Loaded Objects now: 3886.
+Total: 0.888300 ms (FindLiveObjects: 0.104900 ms CreateObjectMapping: 0.053200 ms MarkObjects: 0.699300 ms  DeleteObjects: 0.030700 ms)
+
+Got car config message
+
+Setting car config.
+
