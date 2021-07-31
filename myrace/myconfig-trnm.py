@@ -12,7 +12,7 @@ AUTO_CREATE_NEW_TUB = True     #create a new tub (tub_YY_MM_DD) directory when r
 ROI_CROP_TOP = 34                    #the number of rows of pixels to ignore on the top of the image
 #DRIVE_LOOP_HZ = 20      # the vehicle loop will pause if faster than this speed.
 
-AI_LAUNCH_DURATION = 4            # the ai will output throttle for this many seconds
+AI_LAUNCH_DURATION = 9            # the ai will output throttle for this many seconds
 AI_LAUNCH_THROTTLE = 1.0            # the ai will output this throttle value
 AI_LAUNCH_KEEP_ENABLED = True      # when False ( default) you will need to hit the AI_LAUNCH_ENABLE_BUTTON for each use. This is safest. When this True, is active on each trip into "local" ai mode.
 #AI_THROTTLE_MULT = 1.1              # this multiplier will scale every throttle value for all output from NN models
