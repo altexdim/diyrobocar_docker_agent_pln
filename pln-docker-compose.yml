@@ -52,10 +52,10 @@ services:
     #image: parkinglotnerds/race7:version_0.1
     #
     # VVVV
-    image: altexdim/donkeycar_race2:v1
+    image: altexdim/donkeycar_race2:v2
     #entrypoint: ./start_test_client.sh
     #entrypoint: bash
     #entrypoint: python /root/rC3car/test_client.py
     #entrypoint: /root/race7/pln_wait.sh
     #entrypoint: python3 /root/myrace/manage.py drive --model=/root/myrace/models/
-    entrypoint: python3 /root/myrace/manage.py drive --model /root/myrace/models/mypilot_circuit_launch_16.h5 --myconfig=myconfig-trnm.py
+    entrypoint: python3 /root/myrace/manage.py drive --model /root/myrace/models/mypilot_circuit_launch_19.h5 --myconfig=myconfig-trnm.py
