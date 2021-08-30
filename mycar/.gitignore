@@ -1,0 +1,5 @@
+data/
+logs/
+models/
+*.mp4
+.idea/
