@@ -23,6 +23,7 @@ CONTROLLER_TYPE = 'ps4'            #(ps3|ps4|xbox|nimbus|wiiu|F710|rc3|MM1|custo
 
 SIM_RECORD_LOCATION = True
 SIM_RECORD_VELOCITY = True
+SIM_RECORD_GYROACCEL = True
 
 # ---- trnm local ----
 
