@@ -9,6 +9,10 @@ RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E
 RUN curl -sSL 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC1CF6E31E6BADE8868B172B4F42ED6FBAB17C654' | apt-key add -
 RUN apt-get update
 RUN apt-get install -y python3 python3-dev python3-pip python3-yaml git build-essential cmake nano libtool m4 automake byacc bison flex libxml2-dev libxml2 2to3
+
+# fix for dev branch of donkeycar - opencv, opengl, imgaug
+RUN apt-get install -y ffmpeg libsm6 libxext6
+
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 RUN python3 -m pip install --upgrade pip
 RUN python3 -m pip install opencv-python --upgrade

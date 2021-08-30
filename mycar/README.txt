@@ -2276,11 +2276,23 @@ docker run -it --rm --network host -v "C:/donkeycar/projects/diyrobocar_docker_a
 
 # update tag
 vim pln-docker-compose.yml
+
 # rebuild
 docker-compose -f ./pln-docker-compose.yml up --build --no-start
 
-docker run -it --rm --name "donkeysim_altex" --network=donkeycar --add-host=host.docker.internal:host-gateway -p "127.0.0.1:18887:8887" "donkeycar_race2:v10" bash -c "cd /root/mycar && python3 manage.py drive --model models/mypilot_circuit_launch_77.h5 --myconfig=myconfig-trnm-local.py --type=imu"
+# push changes to dockerhub
+docker login
 
+
+# trmn
+docker run -it --rm --name "donkeysim_altex" --network=donkeycar --add-host=host.docker.internal:host-gateway -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v11" bash -c "cd /root/mycar && python3 manage.py drive --model models/mypilot_circuit_launch_77.h5 --myconfig=myconfig-trnm-local.py --type=imu"
+
+# local
+docker run -it --rm --name "donkeysim_altex" --network=donkeycar --add-host=host.docker.internal:host-gateway -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v11" bash -c "DONKEYCAR_CFG_SIM_HOST=host.docker.internal cd /root/mycar && python3 manage.py drive --model models/mypilot_circuit_launch_77.h5 --myconfig=myconfig-trnm-local.py --type=imu"
+
+# debug
+
+docker run -it --rm -v /home/altex/projects/mycar:/root/mycar -v /home/altex/projects/donkeycar:/donkeycar -v /home/altex/projects/gym-donkeycar:/gym-donkeycar --name "donkeysim_altex" --network=donkeycar --add-host=host.docker.internal:host-gateway -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v11" bash -c "DONKEYCAR_CFG_SIM_HOST=host.docker.internal cd /root/mycar && python3 manage.py drive --model models/mypilot_circuit_launch_77.h5 --myconfig=myconfig-trnm-local.py --type=imu"
 
 ================================================================================================================
 TODO
