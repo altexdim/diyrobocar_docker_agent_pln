@@ -52,7 +52,7 @@ services:
     #image: parkinglotnerds/race7:version_0.1
     #
     # VVVV
-    image: altexdim/donkeycar_race2:v13
+    image: altexdim/donkeycar_race2:v13gpu
     #entrypoint: ./start_test_client.sh
     #entrypoint: bash
     #entrypoint: python /root/rC3car/test_client.py

@@ -2149,7 +2149,6 @@ INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total
 INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=83.35 lap_time=27.27
 |      KerasIMU      | 11.77 | 1.42 | 2.92 | 2.04 | 6.54 | 10.27 | 11.08 |
 
-
 (donkey) altex@Altex-Home-PC:~/projects/mycar$ DONKEYCAR_CFG_MAX_LOOPS=60000 python manage.py drive --model models/mypilot_circuit_launch_77.tflite --myconfig=myconfig-trnm-local.py --type=tflite_imu 2>&1 | grep -i 'lap_number\|  Keras'
 INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
 INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.88 lap_time=28.88
@@ -2295,6 +2294,1305 @@ docker run -it --rm -v /home/altex/projects/mycar:/root/mycar -v /home/altex/pro
 
 # change vars from env
 ssh -T testuser@localhost -- -c start_container -t v12 -r "'cd /root/mycar; export DONKEYCAR_CFG_WEB_INIT_MODE=\"\\\\\"user\\\\\"\"; python3 manage.py drive --model models/mypilot_circuit_launch_77.h5 --myconfig=myconfig-trnm-dockerlocal.py --type=imu'"
+
+# start docker for tournament via ssh
+## remotely
+ssh -T testuser@localhost -- -c start_container -t v13 -r "'cd /root/mycar; python3 manage.py drive --model models/mypilot_circuit_launch_77.h5 --myconfig=myconfig-trnm-user.py --type=imu'"
+## locally
+ssh -T testuser@localhost -- -c start_container -t v13 -r "'cd /root/mycar; export DONKEYCAR_CFG_SIM_HOST=\"\\\\\"host.docker.internal\\\\\"\"; python3 manage.py drive --model models/mypilot_circuit_launch_77.h5 --myconfig=myconfig-trnm-user.py --type=imu'"
+
+# start docker locally via ssh
+ssh -T testuser@localhost -- -c start_container -t v13 -r "'cd /root/mycar; python3 manage.py drive --model models/mypilot_circuit_launch_77.h5 --myconfig=myconfig-trnm-dockerlocal.py --type=imu'"
+
+# run a car docker locally via ssh
+ssh -T testuser@localhost -- -c change_drive_mode -m local
+ssh -T testuser@localhost -- -c change_drive_mode -m local_angle
+ssh -T testuser@localhost -- -c change_drive_mode -m user
+
+# stop docker locally via ssh
+ssh -T testuser@localhost -- -c stop_container
+
+# --- test on real server ---
+
+for ((i=1;i<=10;i++)); do ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_77.tflite --myconfig=myconfig-trnm.py --type=tflite_imu'" 2>&1 | grep -i 'lap_number\|  Keras' ; done
+
+4/10 CRASH, L1=27-29, L3=83-84
+
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=33.30 lap_time=33.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=60.60 lap_time=27.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=87.50 lap_time=26.90
+>> CRASH
+|      KerasIMU      | 50.32 | 2.55 | 4.35 | 4.25 | 4.87 | 5.72 | 10.07 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.50 lap_time=29.50
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.00 lap_time=27.50
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=84.40 lap_time=27.40
+|      KerasIMU      |  9.11 | 3.02 | 4.42 | 4.39 | 4.90 | 5.68 |  7.77 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.00 lap_time=29.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.60 lap_time=27.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=84.70 lap_time=28.10
+|      KerasIMU      | 46.99 | 3.25 | 4.43 | 4.35 | 4.97 | 5.70 | 18.81 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=40.80 lap_time=40.80
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=68.10 lap_time=27.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=95.30 lap_time=27.20
+>> CRASH
+|      KerasIMU      | 30.42 | 3.14 | 4.39 | 4.35 | 4.88 | 5.73 |  8.17 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.80 lap_time=29.80
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.80 lap_time=27.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=84.30 lap_time=27.50
+|      KerasIMU      |  8.85 | 3.33 | 4.49 | 4.50 | 4.93 | 6.10 |  8.47 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.30 lap_time=29.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.50 lap_time=27.20
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=83.30 lap_time=26.80
+|      KerasIMU      | 52.04 | 3.15 | 4.38 | 4.36 | 4.83 | 5.55 |  8.97 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+>> CRASH
+|      KerasIMU      | 22.23 | 2.95 | 4.28 | 4.14 | 4.79 | 5.68 |  9.12 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.90 lap_time=29.90
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.20 lap_time=27.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=84.60 lap_time=27.40
+|      KerasIMU      | 54.47 | 3.18 | 4.39 | 4.33 | 4.88 | 5.59 |  9.27 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.00 lap_time=29.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.50 lap_time=27.50
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=83.70 lap_time=27.20
+|      KerasIMU      | 30.12 | 3.20 | 4.32 | 4.26 | 4.80 | 5.62 |  8.36 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+>> CRASH
+|      KerasIMU      |  8.91 | 2.91 | 4.47 | 4.45 | 4.87 | 5.56 |  8.13 |
+
+for ((i=1;i<=10;i++)); do ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_77.h5 --myconfig=myconfig-trnm.py --type=imu'" 2>&1 | grep -i 'lap_number\|  Keras' ; done
+
+2/10 CRASH, L1=26-30, L3=83-85
+
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.00 lap_time=29.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.70 lap_time=27.70
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=84.20 lap_time=27.50
+|      KerasIMU      | 59.90 | 10.65 | 15.64 | 15.46 | 17.58 | 19.97 | 24.59 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.30 lap_time=29.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.30 lap_time=27.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=83.70 lap_time=27.40
+|      KerasIMU      | 62.58 | 11.06 | 15.43 | 15.19 | 17.39 | 19.54 | 58.80 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.80 lap_time=29.80
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.60 lap_time=26.80
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=83.80 lap_time=27.20
+|      KerasIMU      | 59.84 | 10.29 | 15.61 | 15.42 | 17.57 | 19.72 | 29.77 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.40 lap_time=30.40
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.80 lap_time=27.40
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=85.40 lap_time=27.60
+|      KerasIMU      | 57.00 | 11.45 | 15.73 | 15.51 | 17.70 | 20.33 | 22.59 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+>> CRASH
+|      KerasIMU      | 64.56 | 10.60 | 15.56 | 15.31 | 17.45 | 19.79 | 63.71 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.00 lap_time=29.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.70 lap_time=27.70
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=84.00 lap_time=27.30
+|      KerasIMU      | 62.43 | 11.20 | 15.54 | 15.28 | 17.64 | 19.80 | 46.09 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.20 lap_time=29.20
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.50 lap_time=27.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=83.60 lap_time=27.10
+|      KerasIMU      | 62.91 | 11.33 | 15.48 | 15.23 | 17.44 | 19.70 | 59.09 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.10 lap_time=30.10
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.30 lap_time=27.20
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=85.20 lap_time=27.90
+|      KerasIMU      | 63.05 | 10.10 | 15.79 | 15.55 | 17.84 | 20.05 | 58.56 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+>> CRASH
+|      KerasIMU      | 61.22 | 9.93 | 15.91 | 15.71 | 17.71 | 20.20 | 59.24 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.10 lap_time=30.10
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.50 lap_time=27.40
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=84.90 lap_time=27.40
+|      KerasIMU      | 62.67 | 10.68 | 15.88 | 15.68 | 17.79 | 20.22 | 25.18 |
+
+for ((i=1;i<=10;i++)); do ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_19_2.h5 --myconfig=myconfig-trnm.py --type=linear'" 2>&1 | grep -i 'lap_number\|  Keras' ; done
+
+2/10 CRASH, L1=27-30, L3=85-88
+
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.80 lap_time=29.80
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=59.90 lap_time=30.10
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=88.00 lap_time=28.10
+|    KerasLinear     | 168.34 | 7.39 | 12.43 | 12.11 | 14.03 | 16.01 | 57.22 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.70 lap_time=29.70
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=58.50 lap_time=28.80
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=85.90 lap_time=27.40
+|    KerasLinear     | 174.15 | 9.35 | 12.72 | 12.45 | 14.41 | 16.19 | 40.58 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.90 lap_time=29.90
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.50 lap_time=27.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=85.80 lap_time=28.30
+|    KerasLinear     | 163.84 | 7.71 | 12.71 | 12.42 | 14.28 | 16.60 | 55.99 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.00 lap_time=30.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.50 lap_time=27.50
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=85.30 lap_time=27.80
+|    KerasLinear     | 152.13 | 7.99 | 12.56 | 12.33 | 14.16 | 16.06 | 44.53 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.50 lap_time=29.50
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.70 lap_time=28.20
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=86.00 lap_time=28.30
+|    KerasLinear     | 161.10 | 7.73 | 12.43 | 12.17 | 13.97 | 16.07 | 55.24 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.10 lap_time=30.10
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=58.20 lap_time=28.10
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=85.90 lap_time=27.70
+|    KerasLinear     | 176.71 | 8.23 | 12.45 | 12.11 | 14.09 | 15.76 | 54.64 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.80 lap_time=29.80
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.80 lap_time=28.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=85.40 lap_time=27.60
+|    KerasLinear     | 160.71 | 7.81 | 12.57 | 12.27 | 14.09 | 16.11 | 56.79 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.50 lap_time=29.50
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.10 lap_time=27.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=85.30 lap_time=28.20
+|    KerasLinear     | 170.88 | 8.53 | 12.65 | 12.41 | 14.38 | 16.34 | 18.62 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.40 lap_time=29.40
+>> CRASH
+|    KerasLinear     | 163.29 | 7.56 | 12.66 | 12.33 | 14.25 | 16.20 | 56.95 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.70 lap_time=30.70
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.80 lap_time=27.10
+>> CRASH
+|    KerasLinear     | 174.10 | 8.91 | 12.73 | 12.47 | 14.34 | 16.29 | 56.66 |
+
+for ((i=1;i<=10;i++)); do ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_19_2.tflite --myconfig=myconfig-trnm.py --type=tflite_linear'" 2>&1 | grep -i 'lap_number\|  Keras' ; done
+
+>>> 0/10 CRASH, L1=27-30, L3=84-88
+>>> 3/10 CRASH
+
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.20 lap_time=30.20
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=58.30 lap_time=28.10
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=87.00 lap_time=28.70
+|    KerasLinear     | 41.40 | 3.00 | 4.31 | 4.24 | 4.79 | 5.66 |  8.09 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.10 lap_time=30.10
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=59.40 lap_time=29.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=87.00 lap_time=27.60
+|    KerasLinear     | 49.04 | 2.71 | 4.38 | 4.30 | 4.96 | 5.70 |  8.45 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.50 lap_time=30.50
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=58.10 lap_time=27.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=88.10 lap_time=30.00
+|    KerasLinear     | 10.69 | 2.74 | 4.51 | 4.43 | 5.05 | 5.74 |  8.61 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.30 lap_time=30.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=58.60 lap_time=28.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=86.60 lap_time=28.00
+|    KerasLinear     | 49.55 | 2.88 | 4.40 | 4.35 | 4.78 | 5.62 |  9.03 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.60 lap_time=29.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.40 lap_time=27.80
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=85.20 lap_time=27.80
+|    KerasLinear     | 51.03 | 3.03 | 4.51 | 4.41 | 4.94 | 5.63 | 34.88 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.00 lap_time=30.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=58.60 lap_time=28.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=87.90 lap_time=29.30
+|    KerasLinear     | 48.95 | 2.64 | 4.30 | 4.24 | 4.72 | 5.56 |  8.60 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.90 lap_time=29.90
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.70 lap_time=27.80
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=85.50 lap_time=27.80
+|    KerasLinear     | 52.16 | 2.74 | 4.45 | 4.35 | 4.79 | 5.72 | 46.09 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.60 lap_time=29.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.50 lap_time=27.90
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=85.50 lap_time=28.00
+|    KerasLinear     | 22.11 | 2.85 | 4.45 | 4.45 | 4.98 | 5.73 |  8.83 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.90 lap_time=29.90
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.80 lap_time=26.90
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=84.10 lap_time=27.30
+|    KerasLinear     |  8.72 | 3.12 | 4.50 | 4.48 | 4.84 | 5.72 |  8.59 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.30 lap_time=30.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=58.30 lap_time=28.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=85.70 lap_time=27.40
+|    KerasLinear     | 16.48 | 2.75 | 4.35 | 4.29 | 4.84 | 5.53 |  8.42 |
+
+
+for ((i=1;i<=10;i++)); do ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_54.h5 --myconfig=myconfig-trnm-0_9.py --type=linear'" 2>&1 | grep -i 'lap_number\|  Keras' ; done
+
+>>> 0/10 CRASH, L1=25-31, L3=81-84
+>>> 3/10 CRASH
+
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=31.30 lap_time=31.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.90 lap_time=26.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=84.10 lap_time=26.20
+|    KerasLinear     | 163.72 | 7.65 | 12.46 | 12.11 | 14.10 | 16.20 | 57.94 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.90 lap_time=28.90
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=55.30 lap_time=26.40
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=81.70 lap_time=26.40
+|    KerasLinear     | 58.46 | 8.56 | 12.62 | 12.40 | 14.34 | 16.33 | 19.64 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.80 lap_time=28.80
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=55.70 lap_time=26.90
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=82.60 lap_time=26.90
+|    KerasLinear     | 143.95 | 8.99 | 12.55 | 12.25 | 14.26 | 16.12 | 34.11 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.60 lap_time=28.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=55.10 lap_time=26.50
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=81.30 lap_time=26.20
+|    KerasLinear     | 68.44  | 7.62 | 12.36 | 12.12 | 14.14 | 15.99 | 28.59 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.70 lap_time=28.70
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=55.60 lap_time=26.90
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=82.00 lap_time=26.40
+|    KerasLinear     | 152.31 | 7.85 | 12.40 | 12.18 | 14.11 | 16.04 | 23.01 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.10 lap_time=29.10
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.70 lap_time=27.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=84.00 lap_time=27.30
+|    KerasLinear     | 176.32 | 8.18 | 12.62 | 12.27 | 14.34 | 16.15 | 61.40 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.20 lap_time=30.20
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.50 lap_time=26.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=82.40 lap_time=25.90
+|    KerasLinear     | 68.66 | 8.07 | 12.44 | 12.18 | 14.22 | 15.88 | 57.53 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.60 lap_time=29.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=55.60 lap_time=26.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=81.60 lap_time=26.00
+|    KerasLinear     | 161.85 | 7.77 | 12.60 | 12.28 | 14.23 | 16.51 | 55.72 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.10 lap_time=28.10
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=55.40 lap_time=27.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=81.60 lap_time=26.20
+|    KerasLinear     | 60.08 | 8.42 | 12.59 | 12.38 | 14.31 | 16.29 | 21.82 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.50 lap_time=29.50
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.00 lap_time=26.50
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=82.10 lap_time=26.10
+|    KerasLinear     | 165.47 | 7.64 | 12.36 | 12.08 | 14.03 | 15.83 | 58.45 |
+
+
+for ((i=1;i<=10;i++)); do ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_54.tflite --myconfig=myconfig-trnm-0_9.py --type=tflite_linear'" 2>&1 | grep -i 'lap_number\|  Keras' ; done
+
+>> 2/10 CRASH, L1=25-28, L3=80-81
+
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.20 lap_time=28.20
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=54.10 lap_time=25.90
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=80.20 lap_time=26.10
+|    KerasLinear     | 15.44 | 2.79 | 4.45 | 4.37 | 4.98 | 5.91 |  8.77 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.70 lap_time=28.70
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=55.00 lap_time=26.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=81.10 lap_time=26.10
+|    KerasLinear     |  8.91 | 3.11 | 4.44 | 4.45 | 4.90 | 5.67 |  8.51 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+>> CRASH
+|    KerasLinear     | 10.94 | 3.28 | 4.34 | 4.30 | 4.74 | 5.43 |  8.09 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.00 lap_time=28.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=54.30 lap_time=26.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=81.00 lap_time=26.70
+|    KerasLinear     | 48.98 | 2.81 | 4.30 | 4.22 | 4.84 | 5.61 |  9.03 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=27.90 lap_time=27.90
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=54.70 lap_time=26.80
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=81.00 lap_time=26.30
+|    KerasLinear     |  9.20 | 3.05 | 4.36 | 4.32 | 4.91 | 5.57 |  8.80 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.70 lap_time=28.70
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=55.30 lap_time=26.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=81.60 lap_time=26.30
+|    KerasLinear     |  8.90 | 2.45 | 4.35 | 4.34 | 4.79 | 5.52 |  8.03 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=27.80 lap_time=27.80
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=54.10 lap_time=26.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=80.60 lap_time=26.50
+|    KerasLinear     |  8.73 | 2.73 | 4.51 | 4.45 | 4.91 | 5.79 |  8.67 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+>> CRASH
+|    KerasLinear     |  8.86 | 2.64 | 4.38 | 4.34 | 4.78 | 5.63 |  8.50 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=27.60 lap_time=27.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=54.20 lap_time=26.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=80.40 lap_time=26.20
+|    KerasLinear     | 22.33 | 3.00 | 4.28 | 4.24 | 4.78 | 5.58 |  8.22 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.50 lap_time=28.50
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=55.20 lap_time=26.70
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=81.90 lap_time=26.70
+|    KerasLinear     | 48.03 | 3.22 | 4.42 | 4.41 | 4.86 | 5.68 |  8.59 |
+
+for ((i=1;i<=10;i++)); do ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_54.h5 --myconfig=myconfig-trnm-0_9.py --type=linear'" 2>&1 | grep -i 'lap_number\|  Keras' ; done
+
+>>>... 3/10 CRASH
+
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.80 lap_time=28.80
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=55.00 lap_time=26.20
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=81.50 lap_time=26.50
+|    KerasLinear     | 160.10 | 9.23 | 12.69 | 12.43 | 14.47 | 16.45 | 53.62 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.00 lap_time=29.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=55.80 lap_time=26.80
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=82.50 lap_time=26.70
+|    KerasLinear     | 175.20 | 8.50 | 12.72 | 12.45 | 14.29 | 16.32 | 58.08 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=27.80 lap_time=27.80
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=54.00 lap_time=26.20
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=80.10 lap_time=26.10
+|    KerasLinear     | 164.65 | 7.28 | 12.72 | 12.43 | 14.51 | 16.57 | 30.48 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.10 lap_time=29.10
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=55.70 lap_time=26.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=82.10 lap_time=26.40
+|    KerasLinear     | 164.60 | 7.48 | 12.44 | 12.12 | 14.07 | 15.95 | 53.82 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.90 lap_time=28.90
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=55.80 lap_time=26.90
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=81.80 lap_time=26.00
+|    KerasLinear     | 169.79 | 8.36 | 12.39 | 12.10 | 14.10 | 16.33 | 59.26 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.40 lap_time=28.40
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=54.70 lap_time=26.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=80.70 lap_time=26.00
+|    KerasLinear     | 171.68 | 8.15 | 12.62 | 12.33 | 14.23 | 16.15 | 61.92 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.20 lap_time=28.20
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=54.30 lap_time=26.10
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=80.50 lap_time=26.20
+|    KerasLinear     | 168.64 | 7.79 | 12.49 | 12.26 | 14.10 | 16.03 | 57.47 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=41.60 lap_time=41.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=67.70 lap_time=26.10
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=94.20 lap_time=26.50
+>> CRASH
+|    KerasLinear     | 186.68 | 8.30 | 12.54 | 12.21 | 14.25 | 16.09 | 57.36 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+>> CRASH
+|    KerasLinear     | 178.93 | 8.71 | 12.66 | 12.35 | 14.35 | 16.49 | 31.69 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+>> CRASH
+|    KerasLinear     | 173.56 | 7.88 | 12.70 | 12.43 | 14.39 | 16.41 | 20.19 |
+
+for ((i=1;i<=10;i++)); do ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_19_2.tflite --myconfig=myconfig-trnm.py --type=tflite_linear'" 2>&1 | grep -i 'lap_number\|  Keras' ; done
+
+>>>... 3/10 CRASH
+
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.90 lap_time=29.90
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.70 lap_time=27.80
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=86.20 lap_time=28.50
+|    KerasLinear     | 51.03 | 3.22 | 4.39 | 4.41 | 4.83 | 5.58 |  8.57 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.90 lap_time=30.90
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=58.90 lap_time=28.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=87.00 lap_time=28.10
+|    KerasLinear     |  8.94 | 2.95 | 4.34 | 4.31 | 4.82 | 5.42 |  8.61 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.20 lap_time=30.20
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.60 lap_time=27.40
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=86.00 lap_time=28.40
+|    KerasLinear     |  8.66 | 2.76 | 4.25 | 4.21 | 4.74 | 5.62 |  7.42 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.30 lap_time=30.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=58.20 lap_time=27.90
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=85.10 lap_time=26.90
+|    KerasLinear     |  9.03 | 3.01 | 4.39 | 4.36 | 4.86 | 5.68 |  8.52 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.00 lap_time=30.00
+>> CRASH
+|    KerasLinear     | 45.41 | 2.85 | 4.34 | 4.28 | 4.81 | 5.50 | 10.16 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+>> CRASH
+|    KerasLinear     | 50.26 | 2.90 | 4.44 | 4.43 | 4.92 | 5.81 |  8.65 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.20 lap_time=30.20
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.50 lap_time=27.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=85.50 lap_time=28.00
+|    KerasLinear     |  8.90 | 3.12 | 4.31 | 4.29 | 4.78 | 5.55 |  8.62 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.60 lap_time=29.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.90 lap_time=27.30
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=85.00 lap_time=28.10
+|    KerasLinear     | 47.03 | 2.95 | 4.36 | 4.30 | 4.80 | 5.59 |  8.94 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.40 lap_time=30.40
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=59.30 lap_time=28.90
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=88.80 lap_time=29.50
+|    KerasLinear     |  9.73 | 3.09 | 4.35 | 4.30 | 4.82 | 5.57 |  8.39 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+>> CRASH
+|    KerasLinear     |  8.65 | 3.15 | 4.53 | 4.50 | 4.94 | 5.73 |  8.37 |
+
+
+DONKEYCAR_CFG_MAX_LOOPS=2000 python manage.py drive --model models/mypilot_circuit_launch_77.h5 --myconfig=myconfig-trnm-local.py --type=imu
+
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; sed -i "s/max_loop_count=cfg.MAX_LOOPS/max_loop_count=cfg.MAX_LOOPS,verbose=True/g" manage.py; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_54.h5 --myconfig=myconfig-trnm.py --type=linear'"
+
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; sed -i "s/max_loop_count=cfg.MAX_LOOPS/max_loop_count=cfg.MAX_LOOPS,verbose=True/g" manage.py; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_54.h5 --myconfig=myconfig-trnm-0_9.py --type=linear'" 2>&1 | grep 'jitter\|Keras'
+INFO:donkeycar.parts.keras:Created KerasLinear with interpreter: KerasInterpreter
+INFO:donkeycar.vehicle:Adding part KerasLinear.
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    8ms
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with  125ms
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   12ms
+|    KerasLinear     | 172.45 | 9.06 | 13.34 | 12.23 | 13.73 | 17.00 | 149.69 |
+|    KerasLinear     | 172.45 | 9.06 | 12.79 | 12.19 | 13.79 | 15.73 | 126.58 |
+|    KerasLinear     | 172.45 | 9.06 | 12.77 | 12.22 | 14.04 | 16.79 | 103.48 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   11ms
+|    KerasLinear     | 172.45 | 9.06 | 12.83 | 12.30 | 14.26 | 17.02 | 81.99 |
+|    KerasLinear     | 172.45 | 9.06 | 12.79 | 12.32 | 14.27 | 16.79 | 59.29 |
+|    KerasLinear     | 172.45 | 9.06 | 12.76 | 12.34 | 14.27 | 16.78 | 58.55 |
+|    KerasLinear     | 172.45 | 9.06 | 12.76 | 12.38 | 14.34 | 16.57 | 58.14 |
+|    KerasLinear     | 172.45 | 9.06 | 12.74 | 12.39 | 14.30 | 16.45 | 57.73 |
+|    KerasLinear     | 172.45 | 9.06 | 12.74 | 12.40 | 14.33 | 16.45 | 57.33 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   10ms
+|    KerasLinear     | 172.45 | 9.06 | 12.72 | 12.40 | 14.31 | 16.45 | 56.92 |
+|    KerasLinear     | 172.45 | 9.06 | 12.72 | 12.40 | 14.31 | 16.45 | 56.92 |
+
+
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; sed -i "s/max_loop_count=cfg.MAX_LOOPS/max_loop_count=cfg.MAX_LOOPS,verbose=True/g" manage.py; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_54.tflite --myconfig=myconfig-trnm-0_9.py --type=tflite_linear'" 2>&1 | grep 'jitter\|Keras'
+INFO:donkeycar.parts.keras:Created KerasLinear with interpreter: TfLite
+INFO:donkeycar.vehicle:Adding part KerasLinear.
+|    KerasLinear     | 5.84 | 3.30 | 3.96 | 3.93 | 4.19 | 4.78 |  5.64 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    4ms
+|    KerasLinear     | 51.64 | 3.09 | 4.11 | 3.94 | 4.40 | 4.85 | 34.31 |
+|    KerasLinear     | 51.64 | 3.09 | 4.20 | 4.02 | 4.62 | 5.09 | 25.59 |
+|    KerasLinear     | 51.64 | 3.09 | 4.27 | 4.11 | 4.70 | 5.33 | 19.71 |
+|    KerasLinear     | 51.64 | 2.46 | 4.27 | 4.16 | 4.69 | 5.27 | 11.70 |
+|    KerasLinear     | 51.64 | 2.46 | 4.31 | 4.21 | 4.79 | 5.54 | 10.93 |
+|    KerasLinear     | 51.64 | 2.46 | 4.33 | 4.24 | 4.79 | 5.54 | 10.42 |
+|    KerasLinear     | 51.64 | 2.46 | 4.37 | 4.30 | 4.85 | 5.59 | 10.51 |
+|    KerasLinear     | 51.64 | 2.46 | 4.41 | 4.36 | 4.92 | 5.64 | 10.15 |
+|    KerasLinear     | 51.64 | 2.46 | 4.43 | 4.38 | 4.92 | 5.64 |  9.79 |
+|    KerasLinear     | 51.64 | 2.46 | 4.43 | 4.38 | 4.92 | 5.64 |  9.79 |
+
+for ((i=1;i<=10;i++)); do ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; sed -i "s/max_loop_count=cfg.MAX_LOOPS/max_loop_count=cfg.MAX_LOOPS,verbose=True/g" manage.py; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_77.h5 --myconfig=myconfig-trnm.py --type=imu'" 2>&1 | grep 'jitter\|  Keras\|lap_number' ; done
+
+3/10 CRASH, 1/10 RECOVERY CRASH
+
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with  111ms
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   14ms
+|      KerasIMU      | 61.80 | 11.27 | 15.18 | 14.73 | 17.00 | 18.72 | 53.34 |
+|      KerasIMU      | 61.80 | 11.27 | 15.61 | 15.28 | 17.26 | 20.26 | 47.51 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    0ms
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   10ms
+|      KerasIMU      | 61.80 | 11.27 | 15.69 | 15.38 | 17.44 | 20.04 | 40.31 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   22ms
+|      KerasIMU      | 69.43 | 11.27 | 15.80 | 15.42 | 17.57 | 20.21 | 63.35 |
+|      KerasIMU      | 69.43 | 11.27 | 15.67 | 15.36 | 17.45 | 19.93 | 61.83 |
+|      KerasIMU      | 69.43 | 11.20 | 15.62 | 15.33 | 17.52 | 19.89 | 55.04 |
+|      KerasIMU      | 69.43 | 11.20 | 15.60 | 15.32 | 17.51 | 19.81 | 48.17 |
+|      KerasIMU      | 69.43 | 11.20 | 15.56 | 15.28 | 17.51 | 19.77 | 41.30 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   19ms
+|      KerasIMU      | 69.43 | 11.20 | 15.63 | 15.31 | 17.56 | 19.92 | 62.88 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   20ms
+|      KerasIMU      | 69.43 | 11.20 | 15.73 | 15.37 | 17.70 | 19.95 | 67.08 |
+|      KerasIMU      | 69.43 | 11.20 | 15.73 | 15.37 | 17.70 | 19.95 | 67.08 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with  123ms
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   20ms
+|      KerasIMU      | 68.16 | 11.94 | 15.97 | 15.54 | 18.00 | 20.22 | 58.86 |
+|      KerasIMU      | 68.16 | 11.94 | 15.67 | 15.43 | 17.70 | 20.21 | 49.49 |
+|      KerasIMU      | 68.16 | 11.94 | 15.77 | 15.58 | 17.75 | 20.21 | 40.09 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.00 lap_time=29.00
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   13ms
+|      KerasIMU      | 68.16 | 11.94 | 15.88 | 15.66 | 17.84 | 20.33 | 62.25 |
+|      KerasIMU      | 68.16 | 11.94 | 15.72 | 15.48 | 17.75 | 20.25 | 60.77 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.40 lap_time=27.40
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   17ms
+|      KerasIMU      | 68.16 | 11.82 | 15.77 | 15.50 | 17.77 | 20.39 | 62.70 |
+|      KerasIMU      | 68.16 | 11.82 | 15.74 | 15.48 | 17.73 | 20.35 | 62.21 |
+|      KerasIMU      | 68.16 | 11.82 | 15.66 | 15.42 | 17.68 | 20.33 | 61.73 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=83.70 lap_time=27.30
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   15ms
+|      KerasIMU      | 68.16 | 11.82 | 15.71 | 15.43 | 17.73 | 20.35 | 62.60 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   12ms
+|      KerasIMU      | 68.16 | 11.82 | 15.78 | 15.48 | 17.79 | 20.42 | 62.45 |
+|      KerasIMU      | 68.16 | 11.82 | 15.78 | 15.48 | 17.78 | 20.42 | 62.45 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with  112ms
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|      KerasIMU      | 20.18 | 11.35 | 15.38 | 15.13 | 17.77 | 20.01 | 20.15 |
+|      KerasIMU      | 22.04 | 11.35 | 15.50 | 15.22 | 17.85 | 20.04 | 21.50 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    1ms
+|      KerasIMU      | 47.85 | 11.35 | 15.90 | 15.71 | 18.11 | 20.17 | 32.44 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.10 lap_time=29.10
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   19ms
+|      KerasIMU      | 65.99 | 11.35 | 16.07 | 15.88 | 18.18 | 20.27 | 51.53 |
+|      KerasIMU      | 65.99 | 11.35 | 16.11 | 15.95 | 18.21 | 20.19 | 47.90 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.60 lap_time=27.50
+|      KerasIMU      | 65.99 | 11.35 | 16.11 | 15.96 | 18.11 | 20.17 | 42.76 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   16ms
+|      KerasIMU      | 65.99 | 11.35 | 16.21 | 16.04 | 18.16 | 20.36 | 57.86 |
+|      KerasIMU      | 65.99 | 11.35 | 16.20 | 16.02 | 18.14 | 20.36 | 54.54 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=83.90 lap_time=27.30
+|      KerasIMU      | 65.99 | 11.35 | 16.19 | 16.03 | 18.16 | 20.36 | 51.22 |
+|      KerasIMU      | 65.99 | 11.35 | 16.15 | 15.97 | 18.15 | 20.38 | 47.90 |
+|      KerasIMU      | 65.99 | 11.35 | 16.15 | 15.97 | 18.15 | 20.38 | 47.88 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with  118ms
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|      KerasIMU      | 19.82 | 11.91 | 15.38 | 15.14 | 17.76 | 19.07 | 19.71 |
+|      KerasIMU      | 20.06 | 11.91 | 15.42 | 15.17 | 17.61 | 19.10 | 20.03 |
+|      KerasIMU      | 20.85 | 11.91 | 15.66 | 15.34 | 18.11 | 19.98 | 20.75 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.00 lap_time=30.00
+|      KerasIMU      | 20.85 | 11.91 | 15.79 | 15.47 | 18.20 | 19.98 | 20.72 |
+|      KerasIMU      | 20.85 | 11.91 | 15.90 | 15.66 | 18.22 | 19.98 | 20.69 |
+|      KerasIMU      | 21.50 | 11.91 | 15.98 | 15.75 | 18.27 | 20.04 | 21.14 |
+|      KerasIMU      | 23.01 | 11.91 | 16.01 | 15.80 | 18.27 | 20.06 | 21.37 |
+|      KerasIMU      | 23.01 | 11.91 | 15.99 | 15.77 | 18.23 | 20.04 | 21.48 |
+|      KerasIMU      | 23.01 | 11.91 | 16.03 | 15.81 | 18.24 | 20.04 | 21.59 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   15ms
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   11ms
+|      KerasIMU      | 23.01 | 11.91 | 16.05 | 15.84 | 18.25 | 20.06 | 21.50 |
+|      KerasIMU      | 23.01 | 11.91 | 16.05 | 15.84 | 18.25 | 20.06 | 21.50 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with  127ms
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   16ms
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   14ms
+|      KerasIMU      | 63.32 | 11.24 | 15.56 | 15.02 | 17.23 | 20.53 | 63.05 |
+|      KerasIMU      | 63.32 | 11.24 | 15.60 | 15.19 | 17.64 | 19.26 | 62.77 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    3ms
+|      KerasIMU      | 63.32 | 11.24 | 15.80 | 15.44 | 17.78 | 19.94 | 62.50 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.80 lap_time=29.80
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   15ms
+|      KerasIMU      | 63.32 | 11.24 | 16.00 | 15.68 | 17.96 | 20.56 | 63.29 |
+|      KerasIMU      | 63.32 | 11.24 | 16.06 | 15.75 | 18.02 | 20.56 | 63.28 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.20 lap_time=27.40
+|      KerasIMU      | 63.32 | 11.24 | 16.12 | 15.85 | 18.03 | 20.56 | 63.02 |
+|      KerasIMU      | 63.32 | 11.24 | 16.14 | 15.90 | 18.08 | 20.76 | 62.75 |
+|      KerasIMU      | 63.32 | 11.24 | 16.12 | 15.90 | 18.06 | 20.76 | 62.49 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=84.50 lap_time=27.30
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    9ms
+|      KerasIMU      | 63.32 | 11.24 | 16.15 | 15.92 | 18.07 | 20.92 | 62.22 |
+|      KerasIMU      | 63.32 | 11.24 | 16.13 | 15.87 | 18.05 | 20.91 | 61.95 |
+|      KerasIMU      | 63.32 | 11.24 | 16.13 | 15.87 | 18.05 | 20.91 | 61.95 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with  124ms
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   14ms
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   16ms
+|      KerasIMU      | 63.38 | 11.93 | 16.26 | 15.76 | 17.56 | 20.75 | 63.22 |
+|      KerasIMU      | 63.38 | 11.93 | 15.99 | 15.64 | 17.67 | 20.62 | 63.06 |
+|      KerasIMU      | 63.38 | 11.93 | 16.06 | 15.74 | 17.84 | 20.53 | 62.91 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    2ms
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.90 lap_time=30.90
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   11ms
+|      KerasIMU      | 63.38 | 11.93 | 16.04 | 15.69 | 17.70 | 20.53 | 62.75 |
+|      KerasIMU      | 63.38 | 11.93 | 15.94 | 15.65 | 17.67 | 20.53 | 62.59 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.80 lap_time=26.90
+|      KerasIMU      | 63.38 | 11.93 | 15.91 | 15.61 | 17.70 | 20.53 | 61.98 |
+|      KerasIMU      | 63.38 | 11.93 | 15.94 | 15.62 | 17.78 | 20.53 | 61.37 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   12ms
+|      KerasIMU      | 63.38 | 11.93 | 15.92 | 15.62 | 17.78 | 20.42 | 60.76 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=84.80 lap_time=27.00
+|      KerasIMU      | 63.38 | 11.93 | 15.94 | 15.67 | 17.82 | 20.42 | 60.15 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    8ms
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   14ms
+|      KerasIMU      | 63.38 | 11.93 | 15.95 | 15.67 | 17.83 | 20.42 | 59.53 |
+|      KerasIMU      | 63.38 | 11.93 | 15.95 | 15.67 | 17.83 | 20.42 | 59.53 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   99ms
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|      KerasIMU      | 20.68 | 10.59 | 15.24 | 15.01 | 17.40 | 20.08 | 20.57 |
+|      KerasIMU      | 20.68 | 10.59 | 15.40 | 15.22 | 17.54 | 19.78 | 20.46 |
+|      KerasIMU      | 20.68 | 10.59 | 15.60 | 15.41 | 17.65 | 19.78 | 20.38 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   20ms
+|      KerasIMU      | 66.43 | 10.59 | 15.77 | 15.50 | 17.85 | 20.03 | 31.30 |
+|      KerasIMU      | 66.43 | 10.59 | 15.87 | 15.57 | 17.96 | 20.08 | 22.81 |
+|      KerasIMU      | 66.43 | 10.59 | 15.92 | 15.62 | 17.99 | 20.18 | 22.61 |
+|      KerasIMU      | 66.43 | 10.59 | 15.96 | 15.70 | 18.03 | 20.15 | 22.55 |
+|      KerasIMU      | 66.43 | 10.59 | 15.95 | 15.70 | 17.99 | 20.15 | 22.48 |
+|      KerasIMU      | 66.43 | 10.59 | 15.99 | 15.75 | 18.00 | 20.12 | 22.41 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    2ms
+|      KerasIMU      | 66.43 | 10.59 | 15.98 | 15.72 | 17.98 | 20.18 | 22.75 |
+|      KerasIMU      | 66.43 | 10.59 | 15.98 | 15.72 | 17.98 | 20.18 | 22.73 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with  115ms
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|      KerasIMU      | 19.59 | 10.27 | 15.34 | 15.15 | 17.16 | 18.95 | 19.57 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   14ms
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   15ms
+|      KerasIMU      | 63.22 | 10.27 | 15.72 | 15.41 | 17.55 | 19.49 | 63.09 |
+|      KerasIMU      | 63.22 | 10.27 | 15.75 | 15.44 | 17.58 | 19.49 | 63.02 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.00 lap_time=29.00
+|      KerasIMU      | 63.22 | 10.27 | 15.69 | 15.41 | 17.57 | 19.54 | 62.95 |
+|      KerasIMU      | 63.22 | 10.27 | 15.72 | 15.44 | 17.59 | 19.49 | 62.88 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.40 lap_time=27.40
+|      KerasIMU      | 63.22 | 10.27 | 15.74 | 15.49 | 17.59 | 19.59 | 55.04 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   12ms
+|      KerasIMU      | 63.22 | 10.27 | 15.72 | 15.42 | 17.58 | 19.80 | 62.00 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   16ms
+|      KerasIMU      | 64.10 | 10.27 | 15.68 | 15.37 | 17.52 | 19.80 | 63.02 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=83.60 lap_time=27.20
+|      KerasIMU      | 64.10 | 10.27 | 15.61 | 15.29 | 17.46 | 19.73 | 62.95 |
+|      KerasIMU      | 64.10 | 10.27 | 15.64 | 15.31 | 17.52 | 19.80 | 62.88 |
+|      KerasIMU      | 64.10 | 10.27 | 15.64 | 15.31 | 17.52 | 19.80 | 62.88 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with  125ms
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|      KerasIMU      | 21.00 | 12.68 | 15.42 | 15.20 | 17.46 | 19.43 | 20.77 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   14ms
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    9ms
+|      KerasIMU      | 61.67 | 11.51 | 15.61 | 15.30 | 17.57 | 19.84 | 45.53 |
+|      KerasIMU      | 61.67 | 11.51 | 15.78 | 15.51 | 17.78 | 19.84 | 37.39 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.40 lap_time=30.40
+|      KerasIMU      | 61.67 | 11.51 | 15.65 | 15.40 | 17.75 | 19.81 | 29.26 |
+|      KerasIMU      | 61.67 | 11.51 | 15.54 | 15.29 | 17.68 | 19.72 | 21.13 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=58.30 lap_time=27.90
+|      KerasIMU      | 61.67 | 11.51 | 15.58 | 15.34 | 17.70 | 19.81 | 21.97 |
+|      KerasIMU      | 61.67 | 11.51 | 15.59 | 15.37 | 17.68 | 19.77 | 21.73 |
+|      KerasIMU      | 61.67 | 11.51 | 15.63 | 15.42 | 17.68 | 19.77 | 21.49 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=85.30 lap_time=27.00
+|      KerasIMU      | 61.67 | 11.51 | 15.64 | 15.42 | 17.68 | 19.77 | 21.25 |
+|      KerasIMU      | 61.67 | 11.51 | 15.67 | 15.44 | 17.68 | 19.81 | 22.25 |
+|      KerasIMU      | 61.67 | 11.51 | 15.67 | 15.44 | 17.68 | 19.81 | 22.24 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with  108ms
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|      KerasIMU      | 19.65 | 9.96 | 15.17 | 15.05 | 17.10 | 18.92 | 19.57 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   15ms
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   16ms
+|      KerasIMU      | 63.41 | 9.96 | 15.25 | 14.80 | 17.26 | 19.24 | 63.24 |
+|      KerasIMU      | 63.41 | 9.96 | 15.36 | 15.08 | 17.26 | 19.61 | 63.16 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.50 lap_time=29.50
+|      KerasIMU      | 63.41 | 9.96 | 15.46 | 15.21 | 17.39 | 19.67 | 63.07 |
+|      KerasIMU      | 63.41 | 9.96 | 15.54 | 15.33 | 17.49 | 19.52 | 62.99 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.80 lap_time=27.30
+|      KerasIMU      | 63.41 | 9.96 | 15.65 | 15.47 | 17.67 | 19.71 | 55.17 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   13ms
+|      KerasIMU      | 63.41 | 9.96 | 15.66 | 15.47 | 17.66 | 19.70 | 62.04 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   19ms
+|      KerasIMU      | 66.16 | 9.96 | 15.64 | 15.42 | 17.62 | 19.70 | 63.16 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=83.70 lap_time=26.90
+|      KerasIMU      | 66.16 | 9.96 | 15.64 | 15.42 | 17.64 | 20.09 | 63.07 |
+|      KerasIMU      | 66.16 | 9.96 | 15.71 | 15.52 | 17.70 | 20.13 | 62.99 |
+|      KerasIMU      | 66.16 | 9.96 | 15.71 | 15.52 | 17.70 | 20.13 | 62.99 |
+
+
+for ((i=1;i<=10;i++)); do ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; sed -i "s/max_loop_count=cfg.MAX_LOOPS/max_loop_count=cfg.MAX_LOOPS,verbose=True/g" manage.py; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_77.tflite --myconfig=myconfig-trnm.py --type=tflite_imu'" 2>&1 | grep 'jitter\|  Keras\|lap_number' ; done
+
+2/10 CRASH, 1/10 RECOVERY CRASH
+
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|      KerasIMU      | 7.70 | 2.89 | 4.10 | 3.98 | 4.62 | 4.85 |  7.23 |
+|      KerasIMU      | 7.70 | 2.89 | 4.02 | 3.94 | 4.52 | 4.79 |  6.76 |
+|      KerasIMU      | 7.70 | 2.89 | 4.02 | 3.93 | 4.53 | 4.96 |  6.52 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.10 lap_time=29.10
+|      KerasIMU      | 8.80 | 2.89 | 4.04 | 3.95 | 4.53 | 5.14 |  7.93 |
+|      KerasIMU      |  8.80 | 2.89 | 4.13 | 3.98 | 4.64 | 5.37 |  8.18 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.50 lap_time=27.40
+|      KerasIMU      |  8.80 | 2.89 | 4.20 | 4.05 | 4.69 | 5.35 |  8.09 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    1ms
+|      KerasIMU      | 48.70 | 2.89 | 4.30 | 4.16 | 4.77 | 5.52 |  8.77 |
+|      KerasIMU      | 48.70 | 2.89 | 4.30 | 4.24 | 4.76 | 5.50 |  8.75 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=84.00 lap_time=27.50
+|      KerasIMU      | 48.70 | 2.89 | 4.28 | 4.17 | 4.75 | 5.49 |  8.73 |
+|      KerasIMU      | 48.70 | 2.89 | 4.32 | 4.25 | 4.83 | 5.52 |  8.72 |
+|      KerasIMU      | 48.70 | 2.89 | 4.32 | 4.25 | 4.83 | 5.52 |  8.72 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|      KerasIMU      |  5.15 | 2.88 | 4.02 | 3.98 | 4.43 | 4.94 |  5.13 |
+|      KerasIMU      |  5.21 | 2.88 | 4.06 | 3.99 | 4.70 | 4.96 |  5.19 |
+|      KerasIMU      |  5.21 | 2.88 | 4.18 | 4.05 | 4.77 | 5.02 |  5.17 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.70 lap_time=28.70
+|      KerasIMU      |  5.55 | 2.88 | 4.19 | 4.06 | 4.78 | 5.15 |  5.42 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    5ms
+|      KerasIMU      | 52.27 | 2.88 | 4.31 | 4.19 | 4.82 | 5.26 |  5.96 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.40 lap_time=27.70
+|      KerasIMU      | 52.27 | 2.88 | 4.34 | 4.29 | 4.84 | 5.43 |  6.28 |
+|      KerasIMU      | 52.27 | 2.88 | 4.36 | 4.31 | 4.86 | 5.48 |  6.26 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    7ms
+|      KerasIMU      | 52.27 | 2.88 | 4.39 | 4.33 | 4.92 | 5.52 |  7.05 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=83.40 lap_time=27.00
+|      KerasIMU      | 52.27 | 2.88 | 4.40 | 4.36 | 4.93 | 5.53 |  7.23 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    3ms
+|      KerasIMU      | 52.27 | 2.86 | 4.43 | 4.37 | 4.94 | 5.53 |  8.29 |
+|      KerasIMU      | 52.27 | 2.86 | 4.43 | 4.37 | 4.94 | 5.53 |  8.25 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|      KerasIMU      | 7.98 | 3.68 | 4.35 | 4.26 | 4.94 | 5.36 |  7.47 |
+|      KerasIMU      |  7.98 | 3.11 | 4.19 | 4.11 | 4.76 | 5.19 |  6.96 |
+|      KerasIMU      |  7.98 | 3.11 | 4.14 | 4.05 | 4.67 | 5.17 |  6.44 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.90 lap_time=28.90
+|      KerasIMU      |  8.61 | 3.11 | 4.17 | 4.05 | 4.72 | 5.19 |  8.25 |
+|      KerasIMU      |  8.61 | 3.11 | 4.26 | 4.15 | 4.79 | 5.28 |  8.16 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.00 lap_time=27.10
+|      KerasIMU      |  8.61 | 3.11 | 4.28 | 4.21 | 4.77 | 5.41 |  8.37 |
+|      KerasIMU      |  8.61 | 3.11 | 4.30 | 4.26 | 4.79 | 5.51 |  8.32 |
+|      KerasIMU      |  8.90 | 3.11 | 4.33 | 4.28 | 4.81 | 5.54 |  8.49 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=83.50 lap_time=27.50
+|      KerasIMU      |  8.90 | 3.11 | 4.35 | 4.31 | 4.84 | 5.54 |  8.45 |
+|      KerasIMU      |  8.90 | 3.11 | 4.35 | 4.30 | 4.86 | 5.54 |  8.42 |
+|      KerasIMU      |  8.90 | 3.11 | 4.34 | 4.30 | 4.86 | 5.54 |  8.42 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|      KerasIMU      |  5.09 | 3.59 | 4.05 | 3.95 | 4.61 | 4.94 |  5.07 |
+|      KerasIMU      |  5.51 | 2.93 | 4.06 | 3.97 | 4.61 | 5.15 |  5.50 |
+|      KerasIMU      |  7.25 | 2.93 | 4.08 | 4.00 | 4.54 | 5.09 |  6.21 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.90 lap_time=28.90
+|      KerasIMU      |  7.54 | 2.93 | 4.22 | 4.10 | 4.83 | 5.49 |  7.31 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    7ms
+|      KerasIMU      |  9.10 | 2.93 | 4.24 | 4.15 | 4.81 | 5.49 |  7.55 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.10 lap_time=27.20
+|      KerasIMU      |  9.10 | 2.93 | 4.30 | 4.22 | 4.91 | 5.63 |  7.51 |
+|      KerasIMU      |  9.10 | 2.93 | 4.34 | 4.29 | 4.91 | 5.64 |  7.48 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    8ms
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    6ms
+|      KerasIMU      | 50.75 | 2.93 | 4.40 | 4.35 | 4.92 | 5.69 |  8.17 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=83.50 lap_time=27.40
+|      KerasIMU      | 50.75 | 2.93 | 4.41 | 4.36 | 4.93 | 5.65 |  7.86 |
+|      KerasIMU      | 50.75 | 2.93 | 4.42 | 4.37 | 4.94 | 5.69 |  8.66 |
+|      KerasIMU      | 50.75 | 2.93 | 4.42 | 4.37 | 4.94 | 5.73 |  8.66 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|      KerasIMU      |  4.96 | 2.93 | 3.90 | 3.86 | 4.18 | 4.90 |  4.96 |
+|      KerasIMU      |  5.67 | 2.91 | 3.96 | 3.91 | 4.22 | 5.01 |  5.62 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    6ms
+|      KerasIMU      | 53.86 | 2.76 | 4.16 | 4.01 | 4.52 | 5.27 | 25.09 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.00 lap_time=29.00
+|      KerasIMU      | 53.86 | 2.76 | 4.23 | 4.10 | 4.62 | 5.43 | 18.55 |
+|      KerasIMU      | 53.86 | 2.76 | 4.28 | 4.19 | 4.73 | 5.56 |  9.70 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    6ms
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.30 lap_time=27.30
+|      KerasIMU      | 53.86 | 2.76 | 4.34 | 4.22 | 4.78 | 5.58 | 44.39 |
+|      KerasIMU      | 53.86 | 2.76 | 4.35 | 4.24 | 4.80 | 5.61 | 35.72 |
+|      KerasIMU      | 53.86 | 2.76 | 4.37 | 4.28 | 4.82 | 5.61 | 27.04 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    4ms
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=84.80 lap_time=28.50
+|      KerasIMU      | 53.86 | 2.76 | 4.40 | 4.32 | 4.83 | 5.65 | 18.37 |
+|      KerasIMU      | 53.86 | 2.76 | 4.42 | 4.35 | 4.87 | 5.65 |  9.69 |
+|      KerasIMU      | 53.86 | 2.76 | 4.42 | 4.35 | 4.87 | 5.65 |  9.65 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|      KerasIMU      | 5.73 | 3.49 | 4.14 | 4.06 | 4.69 | 5.03 |  5.61 |
+|      KerasIMU      | 8.23 | 3.49 | 4.27 | 4.17 | 4.88 | 5.52 |  7.24 |
+|      KerasIMU      |  9.23 | 3.49 | 4.49 | 4.44 | 5.18 | 5.82 |  8.64 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.90 lap_time=29.90
+|      KerasIMU      |  9.23 | 3.49 | 4.48 | 4.46 | 5.10 | 5.81 |  8.44 |
+|      KerasIMU      |  9.23 | 3.10 | 4.50 | 4.45 | 5.12 | 5.74 |  8.24 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.60 lap_time=27.70
+|      KerasIMU      |  9.23 | 3.10 | 4.53 | 4.50 | 5.13 | 5.74 |  7.85 |
+|      KerasIMU      |  9.23 | 3.10 | 4.56 | 4.53 | 5.13 | 5.74 |  7.46 |
+|      KerasIMU      |  9.23 | 3.10 | 4.58 | 4.56 | 5.15 | 5.83 |  7.75 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    1ms
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=84.50 lap_time=26.90
+|      KerasIMU      |  9.23 | 3.07 | 4.58 | 4.56 | 5.12 | 5.83 |  8.28 |
+|      KerasIMU      |  9.23 | 3.07 | 4.59 | 4.57 | 5.11 | 5.83 |  8.23 |
+|      KerasIMU      |  9.23 | 3.07 | 4.59 | 4.57 | 5.11 | 5.83 |  8.23 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|      KerasIMU      | 5.67 | 3.80 | 4.49 | 4.45 | 4.93 | 5.33 |  5.62 |
+|      KerasIMU      | 6.57 | 3.54 | 4.39 | 4.32 | 4.89 | 5.33 |  6.50 |
+|      KerasIMU      | 10.19 | 3.54 | 4.47 | 4.42 | 4.92 | 5.82 |  8.24 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.80 lap_time=28.80
+|      KerasIMU      | 10.19 | 3.54 | 4.49 | 4.45 | 4.90 | 5.68 |  7.59 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    2ms
+|      KerasIMU      | 10.19 | 3.15 | 4.47 | 4.44 | 4.97 | 5.68 |  6.94 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.10 lap_time=27.30
+|      KerasIMU      | 10.19 | 3.15 | 4.47 | 4.43 | 4.97 | 5.75 |  6.86 |
+|      KerasIMU      | 10.19 | 3.15 | 4.48 | 4.44 | 4.97 | 5.82 |  6.79 |
+|      KerasIMU      | 10.19 | 3.15 | 4.47 | 4.42 | 4.96 | 5.75 |  6.71 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=83.00 lap_time=26.90
+|      KerasIMU      | 10.19 | 3.15 | 4.44 | 4.40 | 4.91 | 5.75 |  6.68 |
+|      KerasIMU      | 10.19 | 3.15 | 4.45 | 4.41 | 4.93 | 5.75 |  6.93 |
+|      KerasIMU      | 10.19 | 3.15 | 4.45 | 4.41 | 4.93 | 5.75 |  6.93 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|      KerasIMU      | 5.54 | 3.50 | 4.27 | 4.22 | 4.53 | 5.39 |  5.52 |
+|      KerasIMU      | 7.91 | 3.04 | 4.19 | 4.14 | 4.66 | 5.54 |  7.15 |
+|      KerasIMU      |  7.91 | 3.04 | 4.35 | 4.30 | 4.80 | 5.63 |  7.63 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.90 lap_time=28.90
+|      KerasIMU      |  9.40 | 3.04 | 4.43 | 4.45 | 4.85 | 5.83 |  8.21 |
+|      KerasIMU      |  9.40 | 3.04 | 4.45 | 4.49 | 4.85 | 5.72 |  7.91 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.00 lap_time=27.10
+|      KerasIMU      |  9.40 | 3.04 | 4.48 | 4.52 | 4.85 | 5.74 |  8.35 |
+|      KerasIMU      |  9.40 | 3.04 | 4.50 | 4.53 | 4.84 | 5.72 |  8.56 |
+|      KerasIMU      |  9.40 | 3.04 | 4.48 | 4.51 | 4.84 | 5.64 |  8.53 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    0ms
+|      KerasIMU      | 47.38 | 2.75 | 4.49 | 4.49 | 4.84 | 5.64 |  8.79 |
+|      KerasIMU      | 47.38 | 2.75 | 4.49 | 4.48 | 4.84 | 5.63 |  8.63 |
+|      KerasIMU      | 47.38 | 2.75 | 4.49 | 4.48 | 4.84 | 5.63 |  8.63 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|      KerasIMU      | 5.57 | 3.57 | 4.40 | 4.38 | 4.77 | 5.34 |  5.56 |
+|      KerasIMU      | 5.57 | 3.45 | 4.22 | 4.16 | 4.72 | 5.30 |  5.55 |
+|      KerasIMU      | 5.74 | 3.36 | 4.18 | 4.07 | 4.72 | 5.40 |  5.70 |
+|      KerasIMU      | 8.96 | 3.36 | 4.26 | 4.18 | 4.76 | 5.51 |  8.55 |
+|      KerasIMU      | 8.96 | 3.36 | 4.30 | 4.24 | 4.79 | 5.48 |  8.45 |
+|      KerasIMU      |  8.96 | 3.36 | 4.33 | 4.28 | 4.84 | 5.51 |  8.00 |
+|      KerasIMU      |  8.96 | 3.36 | 4.34 | 4.30 | 4.83 | 5.51 |  7.55 |
+|      KerasIMU      | 46.23 | 2.64 | 4.37 | 4.30 | 4.84 | 5.51 |  8.66 |
+|      KerasIMU      | 46.23 | 2.64 | 4.37 | 4.30 | 4.83 | 5.51 |  8.60 |
+|      KerasIMU      | 46.23 | 2.64 | 4.38 | 4.31 | 4.84 | 5.52 |  8.52 |
+|      KerasIMU      | 46.23 | 2.64 | 4.37 | 4.31 | 4.84 | 5.52 |  8.52 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|      KerasIMU      | 7.63 | 3.29 | 4.00 | 4.00 | 4.18 | 4.74 |  7.06 |
+|      KerasIMU      | 9.31 | 3.29 | 4.09 | 4.03 | 4.50 | 5.22 |  8.64 |
+|      KerasIMU      |  9.31 | 3.29 | 4.12 | 4.04 | 4.63 | 5.22 |  8.31 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=32.50 lap_time=32.50
+|      KerasIMU      |  9.31 | 3.29 | 4.23 | 4.10 | 4.72 | 5.48 |  7.97 |
+|      KerasIMU      | 10.93 | 3.29 | 4.30 | 4.21 | 4.77 | 5.52 |  9.31 |
+|      KerasIMU      | 10.93 | 3.04 | 4.32 | 4.26 | 4.78 | 5.58 |  9.12 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=59.80 lap_time=27.30
+|      KerasIMU      | 10.93 | 3.04 | 4.33 | 4.30 | 4.78 | 5.58 |  8.93 |
+|      KerasIMU      | 10.93 | 3.04 | 4.37 | 4.35 | 4.82 | 5.63 |  8.85 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=87.50 lap_time=27.70
+|      KerasIMU      | 10.93 | 3.04 | 4.41 | 4.40 | 4.91 | 5.80 |  8.70 |
+|      KerasIMU      | 10.93 | 3.04 | 4.39 | 4.39 | 4.90 | 5.79 |  8.55 |
+|      KerasIMU      | 10.93 | 3.04 | 4.39 | 4.38 | 4.90 | 5.79 |  8.54 |
+
+for ((i=1;i<=10;i++)); do ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; sed -i "s/max_loop_count=cfg.MAX_LOOPS/max_loop_count=cfg.MAX_LOOPS,verbose=True/g" manage.py; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_19_2.tflite --myconfig=myconfig-trnm.py --type=tflite_linear'" 2>&1 | grep 'jitter\|  Keras\|lap_number' ; done
+
+
+2/10 CRASH
+
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     | 8.14 | 3.06 | 4.36 | 4.20 | 4.99 | 5.50 |  7.63 |
+|    KerasLinear     | 8.52 | 3.06 | 4.47 | 4.45 | 5.08 | 5.59 |  8.37 |
+|    KerasLinear     | 25.71 | 3.06 | 4.51 | 4.46 | 5.00 | 5.80 | 15.45 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.70 lap_time=30.70
+|    KerasLinear     | 25.71 | 3.01 | 4.45 | 4.41 | 4.96 | 5.74 | 12.02 |
+|    KerasLinear     | 25.71 | 3.01 | 4.42 | 4.36 | 4.90 | 5.74 |  8.59 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=58.30 lap_time=27.60
+|    KerasLinear     | 25.71 | 3.01 | 4.46 | 4.42 | 4.90 | 5.66 |  8.63 |
+|    KerasLinear     | 25.71 | 3.01 | 4.49 | 4.46 | 4.92 | 5.74 |  8.61 |
+|    KerasLinear     | 25.71 | 3.01 | 4.51 | 4.48 | 4.98 | 5.74 |  8.58 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=86.50 lap_time=28.20
+|    KerasLinear     | 25.71 | 3.01 | 4.54 | 4.50 | 5.03 | 5.83 |  8.56 |
+|    KerasLinear     | 25.71 | 3.01 | 4.52 | 4.49 | 5.00 | 5.80 |  8.54 |
+|    KerasLinear     | 25.71 | 3.01 | 4.52 | 4.49 | 5.00 | 5.80 |  8.54 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     | 5.47 | 3.00 | 3.89 | 3.88 | 4.08 | 4.97 |  5.41 |
+|    KerasLinear     | 7.44 | 3.00 | 4.01 | 3.95 | 4.41 | 5.24 |  6.66 |
+|    KerasLinear     | 8.20 | 3.00 | 4.20 | 4.09 | 4.66 | 5.48 |  8.19 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.10 lap_time=30.10
+|    KerasLinear     | 8.20 | 3.00 | 4.27 | 4.22 | 4.76 | 5.67 |  8.18 |
+|    KerasLinear     | 8.20 | 3.00 | 4.33 | 4.28 | 4.94 | 6.09 |  8.18 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=58.10 lap_time=28.00
+|    KerasLinear     |  8.20 | 3.00 | 4.34 | 4.30 | 4.94 | 5.76 |  8.15 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    5ms
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    4ms
+|    KerasLinear     | 50.24 | 2.81 | 4.40 | 4.33 | 4.95 | 5.76 |  8.19 |
+|    KerasLinear     | 50.24 | 2.81 | 4.41 | 4.35 | 4.92 | 5.76 |  8.19 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=86.20 lap_time=28.10
+|    KerasLinear     | 50.24 | 2.81 | 4.43 | 4.39 | 4.96 | 5.76 |  8.18 |
+|    KerasLinear     | 50.24 | 2.81 | 4.46 | 4.42 | 4.97 | 5.77 |  8.20 |
+|    KerasLinear     | 50.24 | 2.81 | 4.46 | 4.42 | 4.97 | 5.77 |  8.20 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     |  5.25 | 2.42 | 3.93 | 3.90 | 4.12 | 4.77 |  5.17 |
+|    KerasLinear     |  5.36 | 2.42 | 4.07 | 3.95 | 4.59 | 4.87 |  5.35 |
+|    KerasLinear     |  5.36 | 2.42 | 4.05 | 3.96 | 4.53 | 4.87 |  5.34 |
+|    KerasLinear     |  9.23 | 2.42 | 4.21 | 4.05 | 4.80 | 5.49 |  6.64 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    3ms
+|    KerasLinear     | 50.15 | 2.42 | 4.30 | 4.16 | 4.80 | 5.49 |  9.36 |
+|    KerasLinear     | 50.15 | 2.42 | 4.33 | 4.26 | 4.80 | 5.49 |  8.59 |
+|    KerasLinear     | 50.15 | 2.42 | 4.36 | 4.31 | 4.85 | 5.53 |  8.30 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    3ms
+|    KerasLinear     | 50.15 | 2.42 | 4.36 | 4.29 | 4.84 | 5.55 |  7.83 |
+|    KerasLinear     | 50.15 | 2.42 | 4.39 | 4.33 | 4.89 | 5.55 |  7.36 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    4ms
+|    KerasLinear     | 50.15 | 2.42 | 4.40 | 4.36 | 4.88 | 5.55 |  6.89 |
+|    KerasLinear     | 50.15 | 2.42 | 4.40 | 4.36 | 4.88 | 5.55 |  6.89 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     |  5.49 | 3.01 | 4.41 | 4.38 | 4.78 | 5.17 |  5.44 |
+|    KerasLinear     |  5.56 | 3.01 | 4.44 | 4.42 | 4.79 | 5.30 |  5.53 |
+|    KerasLinear     |  8.50 | 3.01 | 4.42 | 4.39 | 4.82 | 5.42 |  6.95 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.40 lap_time=30.40
+|    KerasLinear     |  8.50 | 3.01 | 4.43 | 4.38 | 4.87 | 5.70 |  7.70 |
+|    KerasLinear     |  8.50 | 3.01 | 4.45 | 4.39 | 4.92 | 5.86 |  7.49 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=58.10 lap_time=27.70
+|    KerasLinear     |  8.50 | 3.01 | 4.44 | 4.38 | 4.90 | 5.79 |  7.44 |
+|    KerasLinear     |  8.71 | 3.01 | 4.45 | 4.38 | 4.94 | 5.86 |  8.10 |
+|    KerasLinear     |  8.71 | 3.01 | 4.48 | 4.41 | 4.96 | 5.88 |  8.09 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=86.00 lap_time=27.90
+|    KerasLinear     |  8.71 | 3.01 | 4.50 | 4.44 | 4.98 | 5.88 |  8.54 |
+|    KerasLinear     |  9.12 | 3.01 | 4.52 | 4.46 | 4.96 | 5.88 |  8.70 |
+|    KerasLinear     |  9.12 | 3.01 | 4.52 | 4.46 | 4.96 | 5.87 |  8.70 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     | 25.76 | 3.57 | 4.40 | 4.27 | 4.79 | 5.26 | 21.74 |
+|    KerasLinear     | 25.76 | 3.57 | 4.41 | 4.34 | 4.73 | 5.37 | 18.84 |
+|    KerasLinear     | 25.76 | 3.57 | 4.46 | 4.40 | 4.81 | 5.47 | 15.71 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.00 lap_time=30.00
+|    KerasLinear     | 25.76 | 3.39 | 4.42 | 4.35 | 4.81 | 5.47 | 12.34 |
+|    KerasLinear     | 25.76 | 3.06 | 4.43 | 4.35 | 4.90 | 5.47 |  8.98 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=58.40 lap_time=28.40
+|    KerasLinear     | 25.76 | 3.06 | 4.41 | 4.34 | 4.86 | 5.47 |  8.89 |
+|    KerasLinear     | 25.76 | 3.06 | 4.41 | 4.34 | 4.87 | 5.49 |  8.85 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    2ms
+|    KerasLinear     | 48.70 | 2.76 | 4.45 | 4.35 | 4.90 | 5.67 | 15.71 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=86.30 lap_time=27.90
+|    KerasLinear     | 48.70 | 2.76 | 4.42 | 4.33 | 4.88 | 5.58 | 12.34 |
+|    KerasLinear     | 48.70 | 2.76 | 4.39 | 4.31 | 4.86 | 5.52 |  8.98 |
+|    KerasLinear     | 48.70 | 2.76 | 4.39 | 4.31 | 4.86 | 5.52 |  8.96 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     |  9.05 | 3.04 | 4.41 | 4.48 | 4.82 | 5.80 |  8.44 |
+|    KerasLinear     |  9.68 | 3.04 | 4.52 | 4.55 | 4.83 | 5.64 |  9.43 |
+|    KerasLinear     |  9.68 | 3.04 | 4.56 | 4.56 | 4.88 | 5.67 |  9.67 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.70 lap_time=29.70
+|    KerasLinear     |  9.68 | 3.04 | 4.58 | 4.57 | 4.91 | 5.79 |  9.67 |
+|    KerasLinear     |  9.68 | 3.04 | 4.60 | 4.57 | 4.93 | 5.67 |  9.67 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.70 lap_time=27.00
+|    KerasLinear     |  9.68 | 3.04 | 4.60 | 4.58 | 4.93 | 5.66 |  9.55 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    5ms
+|    KerasLinear     |  9.68 | 3.04 | 4.61 | 4.59 | 4.94 | 5.67 |  9.42 |
+|    KerasLinear     |  9.68 | 3.04 | 4.56 | 4.56 | 4.91 | 5.66 |  9.30 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=85.10 lap_time=28.40
+|    KerasLinear     |  9.68 | 3.04 | 4.55 | 4.55 | 4.91 | 5.66 |  9.17 |
+|    KerasLinear     |  9.68 | 2.76 | 4.53 | 4.54 | 4.91 | 5.64 |  9.05 |
+|    KerasLinear     |  9.68 | 2.76 | 4.53 | 4.54 | 4.91 | 5.64 |  9.05 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     | 5.68 | 3.31 | 4.53 | 4.52 | 5.01 | 5.64 |  5.68 |
+|    KerasLinear     |  5.68 | 3.31 | 4.44 | 4.42 | 4.87 | 5.52 |  5.67 |
+|    KerasLinear     |  6.49 | 3.31 | 4.44 | 4.43 | 4.84 | 5.52 |  6.01 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.50 lap_time=30.50
+|    KerasLinear     |  6.49 | 3.31 | 4.49 | 4.45 | 4.96 | 5.69 |  6.08 |
+|    KerasLinear     |  8.08 | 3.31 | 4.51 | 4.48 | 4.95 | 5.69 |  6.49 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=58.50 lap_time=28.00
+|    KerasLinear     |  8.36 | 3.31 | 4.48 | 4.45 | 4.92 | 5.71 |  8.05 |
+|    KerasLinear     |  8.36 | 3.29 | 4.47 | 4.43 | 4.95 | 5.76 |  8.03 |
+|    KerasLinear     |  8.36 | 3.25 | 4.45 | 4.42 | 4.95 | 5.69 |  8.01 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=86.80 lap_time=28.30
+|    KerasLinear     |  8.36 | 3.25 | 4.44 | 4.40 | 4.93 | 5.69 |  7.98 |
+|    KerasLinear     |  8.36 | 3.21 | 4.43 | 4.39 | 4.91 | 5.66 |  7.96 |
+|    KerasLinear     |  8.36 | 3.21 | 4.43 | 4.39 | 4.91 | 5.66 |  7.96 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     | 5.01 | 3.37 | 3.99 | 3.93 | 4.35 | 4.87 |  4.99 |
+|    KerasLinear     |  6.48 | 3.33 | 4.26 | 4.01 | 5.22 | 6.33 |  6.48 |
+|    KerasLinear     |  9.03 | 3.33 | 4.34 | 4.26 | 5.14 | 6.33 |  8.17 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.40 lap_time=29.40
+|    KerasLinear     |  9.03 | 3.18 | 4.38 | 4.32 | 5.15 | 6.26 |  7.88 |
+|    KerasLinear     |  9.03 | 3.18 | 4.38 | 4.33 | 5.08 | 6.19 |  7.60 |
+|    KerasLinear     |  9.03 | 3.18 | 4.43 | 4.38 | 5.11 | 6.18 |  7.38 |
+|    KerasLinear     |  9.03 | 3.18 | 4.45 | 4.42 | 5.10 | 6.17 |  8.03 |
+|    KerasLinear     |  9.03 | 3.18 | 4.48 | 4.45 | 5.10 | 6.17 |  7.89 |
+|    KerasLinear     |  9.03 | 3.18 | 4.50 | 4.48 | 5.07 | 6.16 |  7.74 |
+|    KerasLinear     |  9.03 | 3.18 | 4.50 | 4.47 | 5.06 | 6.16 |  7.92 |
+|    KerasLinear     |  9.03 | 3.18 | 4.50 | 4.47 | 5.06 | 6.16 |  7.92 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     |  5.22 | 3.45 | 4.15 | 4.09 | 4.52 | 4.98 |  5.17 |
+|    KerasLinear     |  6.00 | 3.06 | 4.21 | 4.15 | 4.66 | 5.00 |  5.82 |
+|    KerasLinear     |  9.06 | 3.06 | 4.37 | 4.39 | 4.86 | 5.69 |  7.42 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.60 lap_time=29.60
+|    KerasLinear     | 23.11 | 3.06 | 4.44 | 4.45 | 4.86 | 5.71 | 11.92 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with   17ms
+|    KerasLinear     | 23.11 | 3.06 | 4.51 | 4.48 | 5.04 | 5.68 |  9.11 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=58.30 lap_time=28.70
+|    KerasLinear     | 23.11 | 3.05 | 4.52 | 4.49 | 5.03 | 5.68 |  9.00 |
+|    KerasLinear     | 23.11 | 3.05 | 4.51 | 4.49 | 5.01 | 5.66 |  8.93 |
+|    KerasLinear     | 23.11 | 3.05 | 4.51 | 4.49 | 5.00 | 5.67 |  8.86 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=86.60 lap_time=28.30
+|    KerasLinear     | 23.11 | 3.05 | 4.47 | 4.46 | 4.97 | 5.64 |  8.79 |
+|    KerasLinear     | 23.11 | 3.05 | 4.45 | 4.44 | 4.95 | 5.64 |  8.72 |
+|    KerasLinear     | 23.11 | 3.05 | 4.45 | 4.44 | 4.95 | 5.64 |  8.72 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     | 4.80 | 3.21 | 4.02 | 3.96 | 4.50 | 4.71 |  4.78 |
+|    KerasLinear     |  5.52 | 2.81 | 4.15 | 4.02 | 4.76 | 5.07 |  5.35 |
+|    KerasLinear     |  7.92 | 2.81 | 4.13 | 4.00 | 4.73 | 5.08 |  6.49 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=30.30 lap_time=30.30
+|    KerasLinear     |  8.06 | 2.81 | 4.20 | 4.08 | 4.76 | 5.58 |  7.95 |
+|    KerasLinear     |  8.06 | 2.81 | 4.23 | 4.14 | 4.79 | 5.52 |  7.92 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=57.70 lap_time=27.40
+|    KerasLinear     |  8.06 | 2.81 | 4.19 | 4.08 | 4.75 | 5.37 |  7.90 |
+|    KerasLinear     |  8.06 | 2.81 | 4.18 | 4.08 | 4.73 | 5.37 |  7.89 |
+|    KerasLinear     |  8.06 | 2.81 | 4.20 | 4.12 | 4.74 | 5.60 |  7.92 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=84.60 lap_time=26.90
+|    KerasLinear     |  8.06 | 2.81 | 4.21 | 4.14 | 4.71 | 5.58 |  7.95 |
+|    KerasLinear     |  8.67 | 2.81 | 4.23 | 4.16 | 4.76 | 5.57 |  8.05 |
+|    KerasLinear     |  8.67 | 2.81 | 4.23 | 4.16 | 4.76 | 5.57 |  8.05 |
+
+
+for ((i=1;i<=10;i++)); do ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; sed -i "s/max_loop_count=cfg.MAX_LOOPS/max_loop_count=cfg.MAX_LOOPS,verbose=True/g" manage.py; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_54.tflite --myconfig=myconfig-trnm-0_9.py --type=tflite_linear'" 2>&1 | grep 'jitter\|  Keras\|lap_number' ; done
+
+1/10 CRASH
+
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     |  4.90 | 2.81 | 4.00 | 4.01 | 4.31 | 4.63 |  4.85 |
+|    KerasLinear     |  7.74 | 2.81 | 4.04 | 3.99 | 4.48 | 4.86 |  6.68 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=27.80 lap_time=27.80
+|    KerasLinear     | 19.28 | 2.81 | 4.23 | 4.13 | 4.67 | 5.19 | 12.39 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    8ms
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    7ms
+|    KerasLinear     | 53.81 | 2.81 | 4.35 | 4.28 | 4.70 | 5.50 | 26.29 |
+|    KerasLinear     | 53.81 | 2.81 | 4.35 | 4.28 | 4.70 | 5.48 | 19.38 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=54.50 lap_time=26.70
+|    KerasLinear     | 53.81 | 2.81 | 4.35 | 4.28 | 4.71 | 5.50 | 17.01 |
+|    KerasLinear     | 53.81 | 2.81 | 4.38 | 4.29 | 4.73 | 5.54 | 34.62 |
+|    KerasLinear     | 53.81 | 2.81 | 4.38 | 4.29 | 4.74 | 5.58 | 29.53 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=81.00 lap_time=26.50
+|    KerasLinear     | 53.81 | 2.81 | 4.37 | 4.29 | 4.74 | 5.58 | 24.44 |
+|    KerasLinear     | 53.81 | 2.81 | 4.37 | 4.29 | 4.75 | 5.58 | 19.36 |
+|    KerasLinear     | 53.81 | 2.81 | 4.37 | 4.29 | 4.75 | 5.58 | 19.33 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     | 8.65 | 3.36 | 4.09 | 4.00 | 4.59 | 4.99 |  7.94 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    4ms
+|    KerasLinear     |  8.65 | 3.14 | 4.10 | 4.01 | 4.60 | 5.17 |  7.46 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.00 lap_time=28.00
+|    KerasLinear     |  8.65 | 3.14 | 4.09 | 4.01 | 4.57 | 5.17 |  8.24 |
+|    KerasLinear     |  8.65 | 3.08 | 4.10 | 4.01 | 4.59 | 5.17 |  8.10 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    7ms
+|    KerasLinear     | 53.69 | 2.87 | 4.20 | 4.05 | 4.63 | 5.31 |  8.79 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=54.90 lap_time=26.90
+|    KerasLinear     | 53.69 | 2.87 | 4.24 | 4.09 | 4.70 | 5.42 |  8.58 |
+|    KerasLinear     | 53.69 | 2.87 | 4.31 | 4.18 | 4.83 | 5.54 |  8.85 |
+|    KerasLinear     | 53.69 | 2.87 | 4.33 | 4.22 | 4.86 | 5.57 |  8.79 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=81.00 lap_time=26.10
+|    KerasLinear     | 53.69 | 2.87 | 4.34 | 4.24 | 4.86 | 5.63 |  8.72 |
+|    KerasLinear     | 53.69 | 2.87 | 4.32 | 4.23 | 4.84 | 5.57 |  8.65 |
+|    KerasLinear     | 53.69 | 2.87 | 4.32 | 4.23 | 4.84 | 5.57 |  8.65 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     | 4.94 | 3.36 | 3.96 | 3.94 | 4.34 | 4.80 |  4.92 |
+|    KerasLinear     | 4.96 | 3.36 | 4.03 | 3.98 | 4.50 | 4.84 |  4.95 |
+|    KerasLinear     | 34.45 | 3.20 | 4.08 | 3.97 | 4.54 | 4.85 | 16.93 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.70 lap_time=28.70
+|    KerasLinear     | 34.45 | 3.20 | 4.19 | 4.02 | 4.65 | 5.46 | 13.91 |
+|    KerasLinear     | 34.45 | 2.86 | 4.26 | 4.10 | 4.75 | 5.52 |  8.75 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=54.60 lap_time=25.90
+|    KerasLinear     | 34.45 | 2.86 | 4.30 | 4.21 | 4.79 | 5.53 |  8.66 |
+|    KerasLinear     | 34.45 | 2.86 | 4.32 | 4.26 | 4.81 | 5.68 |  8.71 |
+|    KerasLinear     | 34.45 | 2.86 | 4.32 | 4.26 | 4.81 | 5.65 |  8.70 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=80.80 lap_time=26.20
+|    KerasLinear     | 34.45 | 2.86 | 4.34 | 4.30 | 4.83 | 5.65 |  8.69 |
+|    KerasLinear     | 34.45 | 2.86 | 4.36 | 4.31 | 4.84 | 5.68 |  8.68 |
+|    KerasLinear     | 34.45 | 2.86 | 4.36 | 4.31 | 4.84 | 5.68 |  8.68 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     | 4.99 | 2.53 | 4.16 | 4.02 | 4.76 | 4.98 |  4.99 |
+|    KerasLinear     |  5.57 | 2.53 | 4.23 | 4.24 | 4.71 | 4.99 |  5.43 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.30 lap_time=28.30
+|    KerasLinear     |  5.57 | 2.53 | 4.16 | 4.08 | 4.64 | 4.99 |  5.40 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    5ms
+|    KerasLinear     | 51.91 | 2.53 | 4.23 | 4.08 | 4.65 | 5.29 | 17.40 |
+|    KerasLinear     | 51.91 | 2.53 | 4.27 | 4.15 | 4.68 | 5.48 |  8.74 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=54.70 lap_time=26.40
+|    KerasLinear     | 51.91 | 2.53 | 4.29 | 4.21 | 4.70 | 5.52 |  8.49 |
+|    KerasLinear     | 51.91 | 2.53 | 4.31 | 4.25 | 4.74 | 5.52 |  8.37 |
+|    KerasLinear     | 51.91 | 2.53 | 4.33 | 4.28 | 4.76 | 5.56 |  8.25 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=80.80 lap_time=26.10
+|    KerasLinear     | 51.91 | 2.53 | 4.36 | 4.33 | 4.77 | 5.58 |  8.36 |
+|    KerasLinear     | 51.91 | 2.53 | 4.34 | 4.32 | 4.76 | 5.58 |  8.30 |
+|    KerasLinear     | 51.91 | 2.53 | 4.34 | 4.32 | 4.76 | 5.58 |  8.30 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     | 4.96 | 3.17 | 3.97 | 3.95 | 4.17 | 4.81 |  4.93 |
+|    KerasLinear     | 8.39 | 3.17 | 4.05 | 3.98 | 4.48 | 5.16 |  7.18 |
+|    KerasLinear     | 8.39 | 3.17 | 4.17 | 4.05 | 4.63 | 5.18 |  7.93 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.60 lap_time=28.60
+|    KerasLinear     | 27.69 | 3.17 | 4.30 | 4.20 | 4.75 | 5.64 | 12.67 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    7ms
+|    KerasLinear     | 54.48 | 2.69 | 4.36 | 4.24 | 4.75 | 5.77 | 27.77 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=55.40 lap_time=26.80
+|    KerasLinear     | 54.48 | 2.69 | 4.35 | 4.24 | 4.77 | 5.76 | 24.02 |
+|    KerasLinear     | 54.48 | 2.69 | 4.34 | 4.23 | 4.76 | 5.77 | 20.29 |
+|    KerasLinear     | 54.48 | 2.69 | 4.34 | 4.24 | 4.77 | 5.77 | 16.57 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=81.80 lap_time=26.40
+|    KerasLinear     | 54.48 | 2.69 | 4.35 | 4.25 | 4.79 | 5.73 | 12.84 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    4ms
+|    KerasLinear     | 54.48 | 2.69 | 4.37 | 4.26 | 4.78 | 5.73 | 27.76 |
+|    KerasLinear     | 54.48 | 2.69 | 4.37 | 4.26 | 4.78 | 5.73 | 27.74 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     | 8.61 | 3.42 | 4.00 | 3.96 | 4.17 | 4.82 |  7.88 |
+|    KerasLinear     |  8.61 | 3.12 | 4.16 | 4.02 | 4.72 | 5.07 |  7.38 |
+|    KerasLinear     |  8.61 | 3.12 | 4.16 | 4.06 | 4.67 | 5.02 |  6.76 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=29.30 lap_time=29.30
+|    KerasLinear     |  8.61 | 3.12 | 4.31 | 4.22 | 4.92 | 5.53 |  8.25 |
+|    KerasLinear     |  8.61 | 3.12 | 4.32 | 4.25 | 4.85 | 5.52 |  8.16 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=56.40 lap_time=27.10
+|    KerasLinear     |  8.61 | 3.12 | 4.33 | 4.28 | 4.84 | 5.55 |  8.10 |
+|    KerasLinear     |  8.61 | 3.12 | 4.34 | 4.30 | 4.84 | 5.53 |  8.04 |
+|    KerasLinear     |  8.61 | 3.12 | 4.33 | 4.29 | 4.83 | 5.52 |  7.99 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=83.10 lap_time=26.70
+|    KerasLinear     |  8.61 | 3.12 | 4.33 | 4.29 | 4.81 | 5.53 |  8.20 |
+|    KerasLinear     |  8.61 | 3.12 | 4.35 | 4.31 | 4.83 | 5.54 |  8.35 |
+|    KerasLinear     |  8.61 | 3.12 | 4.35 | 4.31 | 4.83 | 5.54 |  8.35 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     | 8.71 | 3.49 | 4.31 | 4.29 | 4.66 | 5.02 |  8.05 |
+|    KerasLinear     |  8.71 | 3.45 | 4.25 | 4.24 | 4.65 | 5.01 |  7.38 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.60 lap_time=28.60
+|    KerasLinear     |  8.71 | 3.45 | 4.31 | 4.29 | 4.73 | 5.40 |  8.36 |
+|    KerasLinear     |  8.71 | 3.45 | 4.34 | 4.32 | 4.76 | 5.39 |  8.25 |
+|    KerasLinear     |  8.71 | 3.40 | 4.34 | 4.32 | 4.75 | 5.34 |  8.13 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    3ms
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=55.30 lap_time=26.70
+|    KerasLinear     | 50.29 | 3.35 | 4.41 | 4.33 | 4.83 | 5.59 |  8.61 |
+|    KerasLinear     | 50.29 | 3.35 | 4.42 | 4.36 | 4.84 | 5.59 |  8.50 |
+|    KerasLinear     | 50.29 | 3.04 | 4.43 | 4.37 | 4.84 | 5.59 |  8.40 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=81.30 lap_time=26.00
+|    KerasLinear     | 50.29 | 3.04 | 4.43 | 4.37 | 4.85 | 5.58 |  8.29 |
+|    KerasLinear     | 50.29 | 3.04 | 4.44 | 4.40 | 4.86 | 5.59 |  8.32 |
+|    KerasLinear     | 50.29 | 3.04 | 4.44 | 4.40 | 4.86 | 5.59 |  8.32 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     | 5.05 | 3.29 | 4.02 | 4.00 | 4.23 | 4.89 |  5.02 |
+|    KerasLinear     |  8.24 | 3.29 | 4.14 | 4.05 | 4.63 | 5.10 |  7.14 |
+|    KerasLinear     |  8.24 | 3.29 | 4.22 | 4.12 | 4.73 | 5.29 |  8.18 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.80 lap_time=28.80
+|    KerasLinear     |  8.24 | 3.29 | 4.33 | 4.25 | 4.84 | 5.46 |  8.18 |
+|    KerasLinear     |  8.24 | 3.29 | 4.39 | 4.39 | 4.86 | 5.55 |  8.16 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    1ms
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=55.50 lap_time=26.70
+|    KerasLinear     | 47.51 | 2.83 | 4.46 | 4.43 | 4.88 | 5.64 |  8.36 |
+|    KerasLinear     | 47.51 | 2.83 | 4.48 | 4.45 | 4.89 | 5.71 |  8.53 |
+|    KerasLinear     | 47.51 | 2.83 | 4.52 | 4.48 | 4.94 | 5.80 |  8.49 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=81.70 lap_time=26.20
+|    KerasLinear     | 47.51 | 2.83 | 4.53 | 4.51 | 4.94 | 5.75 |  8.44 |
+|    KerasLinear     | 47.51 | 2.83 | 4.55 | 4.52 | 4.97 | 5.80 |  8.56 |
+|    KerasLinear     | 47.51 | 2.83 | 4.55 | 4.52 | 4.97 | 5.80 |  8.56 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     | 5.08 | 3.49 | 4.13 | 4.01 | 4.67 | 4.98 |  5.08 |
+|    KerasLinear     | 8.52 | 3.47 | 4.09 | 3.98 | 4.65 | 5.02 |  7.24 |
+|    KerasLinear     |  8.52 | 3.43 | 4.05 | 3.98 | 4.57 | 4.96 |  6.59 |
+|    KerasLinear     |  8.68 | 3.09 | 4.07 | 3.98 | 4.64 | 5.02 |  8.55 |
+|    KerasLinear     |  8.68 | 3.09 | 4.14 | 4.01 | 4.70 | 5.07 |  8.57 |
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    6ms
+INFO:donkeycar.vehicle:WARN::Vehicle: jitter violation in vehicle loop with    7ms
+|    KerasLinear     | 54.03 | 2.84 | 4.29 | 4.07 | 4.78 | 5.42 | 44.65 |
+|    KerasLinear     | 54.03 | 2.84 | 4.35 | 4.16 | 4.82 | 5.52 | 35.69 |
+|    KerasLinear     | 54.03 | 2.84 | 4.38 | 4.32 | 4.81 | 5.60 | 26.73 |
+|    KerasLinear     | 54.03 | 2.84 | 4.42 | 4.38 | 4.91 | 5.71 | 17.77 |
+|    KerasLinear     | 54.03 | 2.84 | 4.42 | 4.38 | 4.92 | 5.71 |  8.82 |
+|    KerasLinear     | 54.03 | 2.84 | 4.42 | 4.38 | 4.92 | 5.71 |  8.77 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=0 total_time=0.00 lap_time=0.00
+|    KerasLinear     | 7.81 | 3.39 | 3.94 | 3.89 | 4.11 | 5.03 |  7.27 |
+|    KerasLinear     | 7.81 | 3.39 | 3.98 | 3.92 | 4.34 | 5.01 |  6.72 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=28.30 lap_time=28.30
+|    KerasLinear     |  7.81 | 2.80 | 3.97 | 3.93 | 4.25 | 4.94 |  6.18 |
+|    KerasLinear     |  8.31 | 2.80 | 4.04 | 3.97 | 4.48 | 5.07 |  7.91 |
+|    KerasLinear     |  8.82 | 2.80 | 4.10 | 4.02 | 4.52 | 5.07 |  8.31 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=54.50 lap_time=26.20
+|    KerasLinear     |  8.82 | 2.80 | 4.12 | 4.06 | 4.52 | 5.10 |  8.21 |
+|    KerasLinear     |  8.82 | 2.80 | 4.16 | 4.10 | 4.56 | 5.29 |  8.11 |
+|    KerasLinear     |  8.82 | 2.80 | 4.20 | 4.14 | 4.64 | 5.44 |  8.01 |
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=80.50 lap_time=26.00
+|    KerasLinear     | 10.11 | 2.80 | 4.23 | 4.18 | 4.68 | 5.44 |  8.42 |
+|    KerasLinear     | 10.11 | 2.80 | 4.21 | 4.16 | 4.66 | 5.40 |  8.31 |
+|    KerasLinear     | 10.11 | 2.80 | 4.21 | 4.16 | 4.66 | 5.40 |  8.31 |
+
+for ((i=1;i<=10;i++)); do ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; sed -i "s/max_loop_count=cfg.MAX_LOOPS/max_loop_count=cfg.MAX_LOOPS,verbose=True/g" manage.py; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_54.h5 --myconfig=myconfig-trnm-0_9.py --type=linear'" 2>&1 | grep 'jitter\|  Keras\|lap_number' ; done
+
+>>> NO, hit a wall on 2nd turn
+
+------------------------------------------------
+--- debug docker nvidia gpu inside container ---
+------------------------------------------------
+
+diff --git a/agent_pln.Dockerfile b/agent_pln.Dockerfile
+@@ -1,5 +1,6 @@
+-FROM ubuntu:bionic
++FROM nvidia/cuda:11.2.1-base-ubuntu18.04
+
+diff --git a/pln-docker-compose.yml b/pln-docker-compose.yml
+@@ -52,7 +52,7 @@ services:
+-    image: altexdim/donkeycar_race2:v13
++    image: altexdim/donkeycar_race2:v13gpu
+
+
+docker run -it --rm -v /home/altex/projects/mycar:/root/mycar -v /home/altex/projects/donkeycar:/donkeycar -v /home/altex/projects/gym-donkeycar:/gym-donkeycar --name "donkeysim_altex" --network=donkeycar --add-host=host.docker.internal:host-gateway -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v13" bash -c "cd /root/mycar; python3 manage.py drive --model models/mypilot_circuit_launch_77.h5 --myconfig=myconfig-trnm-dockerlocal.py --type=imu"
+
+docker run -it --rm --name "donkeysim_altex" --network=donkeycar --add-host=host.docker.internal:host-gateway -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v13gpu" bash -c "cd /root/mycar; python3 manage.py drive --model models/mypilot_circuit_launch_77.h5 --myconfig=myconfig-trnm-dockerlocal.py --type=imu"
+
+docker run -it --rm -v /home/altex/projects/mycar:/root/mycar -v /home/altex/projects/donkeycar:/donkeycar -v /home/altex/projects/gym-donkeycar:/gym-donkeycar --name "donkeysim_altex" --network=donkeycar --add-host=host.docker.internal:host-gateway -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v13gpu" bash -c "cd /root/mycar; python3 manage.py drive --model models/mypilot_circuit_launch_77.h5 --myconfig=myconfig-trnm-dockerlocal.py --type=imu"
+
+docker run -it --gpus all --rm --name "donkeysim_altex" --network=donkeycar --add-host=host.docker.internal:host-gateway -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v13gpu" bash -c "cd /root/mycar; python3 manage.py drive --model models/mypilot_circuit_launch_77.h5 --myconfig=myconfig-trnm-dockerlocal.py --type=imu"
+
+docker run -it --gpus all --rm -v /home/altex/projects/mycar:/root/mycar -v /home/altex/projects/donkeycar:/donkeycar -v /home/altex/projects/gym-donkeycar:/gym-donkeycar --name "donkeysim_altex" --network=donkeycar --add-host=host.docker.internal:host-gateway -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v13gpu" bash -c "cd /root/mycar; python3 manage.py drive --model models/mypilot_circuit_launch_77.h5 --myconfig=myconfig-trnm-dockerlocal.py --type=imu"
+
+
+docker run -it --gpus all --rm -v /home/altex/projects/mycar:/root/mycar -v /home/altex/projects/donkeycar:/donkeycar -v /home/altex/projects/gym-donkeycar:/gym-donkeycar --name "donkeysim_altex" --network=donkeycar --add-host=host.docker.internal:host-gateway -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v13gpu" bash
+
+# --gpus all 
+# --gpus all --runtime=nvidia
+
+# apt-get install nvidia-docker2
+# --runtime=nvidia (https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#install-guide)
+
+# import tensorflow as tf
+# print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
+
+# import tensorflow as tf
+# print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
+
+apt-get update
+apt-get install cuda
+apt-get install nvidia-cuda-toolkit
+
+--runtime=nvidia
+nvidia-smi
+find /usr/ -name 'libcuda.so.1'
+LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64
+
+---
+    # dependecies 
+    sudo apt install cuda-cudart-11-0
+    sudo apt install libcufft-11-2
+    sudo apt install libcurand-11-2
+    sudo apt install libcusolver-11-0 # installs so.10, see below 
+    sudo apt install libcudnn8
+    sudo apt install libcublas-11-0
+    sudo apt install libcusparse-11-0
+
+    # add this path to LD_LIBRARY_PATH in .bashrc as in previous posts
+    /usr/local/cuda-11.0/targets/x86_64-linux/lib/
+
+    # in the /usr/... path, run:
+    sudo ln -s libcusolver.so.10.6.0.245 libcusolver.so.11 
+
+---
+# work
+cuda-cudart-11-0 libcusolver-11-0 libcudnn8 libcublas-11-0 libcusparse-11-0 libcufft-11-2 libcurand-11-2
+# work 2
+cuda-cudart-11-4 libcusolver-11-4 libcudnn8 libcublas-11-4 libcusparse-11-4 libcufft-11-4 libcurand-11-4
+
+root@3ed196a45140:~/mycar# history | grep apt
+   14  apt install cuda-cudart-11-0
+   15  apt install libcufft10
+   16  apt install libcufft11
+   17  apt install libcufft
+   18  apt install libcurand10
+   19  apt install libcurand11
+   20  apt install libcusolver-11-0
+   21  apt install libcudnn8
+   22  apt install libcublas-11-0
+   23  apt install libcusparse-11-0
+   58  apt install libcufft11
+   59  apt install libcufft10
+   60  apt install libcufft
+   61  apt install libcufft.so.10
+   62  apt install libcufft-11-2
+   63  apt install libcurand.so.10
+   64  apt install libcurand-11-2
+root@3ed196a45140:~/mycar# history | grep PATH
+   12  export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda-11.2/targets/x86_64-linux/lib
+   27  export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda-11.2/targets/x86_64-linux/lib
+   34  export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda-11.0/targets/x86_64-linux/lib
+   40  export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda-11.0/targets/x86_64-linux/lib:/usr/local/cuda-11.2/targets/x86_64-linux/lib
+   75  export PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/mycar # ptxas
+
+   52  cd /usr/local/cuda-11.0/targets/x86_64-linux/lib/
+   54  ln -s libcusolver.so.10.6.0.245 libcusolver.so.11
+
+
+docker run -it --gpus all --runtime=nvidia --rm -v /home/altex/projects/mycar:/root/mycar -v /home/altex/projects/donkeycar:/donkeycar -v /home/altex/projects/gym-donkeycar:/gym-donkeycar --name "donkeysim_altex" --network=donkeycar --add-host=host.docker.internal:host-gateway -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v13gpu" bash
+
+---
+
+# fix for ptxas
+export PATH=/root/mycar:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# (ptxas, nvcc)
+apt install nvidia-cuda-toolkit 
+# test gpu
+python3 manage.py drive --model models/mypilot_circuit_launch_54.h5 --myconfig=myconfig-trnm-dockerlocal-0_9.py --type=linear
+
+================================================================================================================
+For the tournament
+----------------------------------------------------------------------------------------------------------------
+
+--- run ---
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; python3 manage.py drive --model models/mypilot_circuit_launch_54.tflite --myconfig=myconfig-trnm-user-0_9.py --type=tflite_linear'"
+
+--- start ---
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c change_drive_mode -m local
+
+--- stop ---
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c stop_container
 
 ================================================================================================================
 TODO

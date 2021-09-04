@@ -1,6 +1,11 @@
 # Base image
-FROM ubuntu:bionic
-ENV TZ=Europe/Berlin
+# [BASE] this is the original ubuntu image, without GPU support
+### FROM ubuntu:bionic
+
+# [GPU] This is the official nvidia image with GPU support
+FROM nvidia/cuda:11.4.1-base-ubuntu18.04
+
+ENV TZ=Europe/London
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get remove python-*
 RUN apt-get update && apt-get install -y lsb-release gnupg2 curl && apt-get clean all
@@ -10,7 +15,12 @@ RUN curl -sSL 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC1CF6E31E6
 RUN apt-get update
 RUN apt-get install -y python3 python3-dev python3-pip python3-yaml git build-essential cmake nano libtool m4 automake byacc bison flex libxml2-dev libxml2 2to3
 
-# fix for dev branch of donkeycar - opencv, opengl, imgaug
+# [GPU] fix for nvidia gpu support - it's needed for tensorflow python package
+RUN apt-get install -y cuda-cudart-11-4 libcusolver-11-4 libcudnn8 libcublas-11-4 libcusparse-11-4 libcufft-11-4 libcurand-11-4
+# [GPU] fix for nvidia gpu support - add nvcc and ptxas
+RUN apt-get install -y nvidia-cuda-toolkit
+
+# [DONKEYCAR:DEV] fix for dev branch of donkeycar - opencv, opengl, imgaug - It's needed for imgaug python library (libGL.so.1 not found fix)
 RUN apt-get install -y ffmpeg libsm6 libxext6
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
