@@ -1,16 +1,16 @@
 # ==== Different variants for tournaments ====
 # --- local testing config ---
 # USE_JOYSTICK_AS_DEFAULT = True      #when starting the manage.py, when True, will not require a --js option to use the joystick
-# SIM_HOST = "127.0.0.1"              # when racing on virtual-race-league use host "trainmydonkey.com"
+# SIM_HOST = "127.0.0.1"
 
-# --- tournament config, docker container, local testing ---
+# --- tournament config, docker container, local testing, autostart ---
 USE_JOYSTICK_AS_DEFAULT=False
 AI_THROTTLE_MULT=1.5
 AI_LAUNCH_DURATION=3.25
 AI_LAUNCH_THROTTLE=1.0
 AI_LAUNCH_KEEP_ENABLED=True
 WEB_INIT_MODE="local"
-SIM_HOST = "host.docker.internal"
+SIM_HOST = "127.0.0.1"
 
 # ==== my config, common part for local testing, training, and tournament ====
 DONKEY_GYM = True
