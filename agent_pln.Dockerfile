@@ -84,8 +84,8 @@ RUN git clone https://github.com/altexdim/donkeycar.git
 #RUN cd /donkeycar; git checkout dev; pip install -e .[pc]
 RUN cd /donkeycar; git checkout dev_altex; pip install -e .[pc]
 
-COPY ./rC3car  /root/rC3car
-COPY ./race7  /root/race7
+# COPY ./rC3car  /root/rC3car
+# COPY ./race7  /root/race7
 
 #------> COPY ./myrace /root/myrace <------
 #COPY ./myrace /root/myrace
