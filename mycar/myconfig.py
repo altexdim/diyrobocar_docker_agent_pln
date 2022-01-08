@@ -3,17 +3,60 @@
 DONKEY_GYM = True
 DONKEY_SIM_PATH = "remote" #"/home/tkramer/projects/sdsandbox/sdsim/build/DonkeySimLinux/donkey_sim.x86_64" when racing on virtual-race-league use "remote", or user "remote" when you want to start the sim manually first.
 SIM_HOST = "127.0.0.1"              # when racing on virtual-race-league use host "trainmydonkey.com"
-DONKEY_GYM_ENV_NAME = "donkey-circuit-launch-track-v0"
-GYM_CONF = { "body_style" : "car01", "body_rgb" : (255, 64, 0), "car_name" : "Dmitry Ananyev", "font_size" : 20} # body style(donkey|bare|car01) body rgb 0-255
-GYM_CONF["racer_name"] = "Dmitry Ananyev"
-GYM_CONF["country"] = "UK"
-GYM_CONF["bio"] = "More robots"
-GYM_CONF["frame_skip"] = 1
+DONKEY_GYM_ENV_NAME = "donkey-mountain-track-v0"
+# body_style: donkey|bare|car01
+# body_rgb : 0-255
+# good orange colors: (254, 96, 2)=orange (243, 82, 41)=salmon-orange (254, 92, 19)=plastic-orange
+GYM_CONF = {"body_style": "car01",
+            "body_rgb": (243, 82, 41),
+            "car_name": "Dmitry Ananyev",
+            "font_size": 20,
+            "racer_name": "Dmitry Ananyev",
+            "country": "UK",
+            "bio": "More robots",
+            "frame_skip": 1,
+            "start_delay": 0.0,
+            # TODO: it's needed for obstacle avoidance
+            # Lidar config for obstacle avoidance
+            # "lidar_config": {
+            #     "degPerSweepInc": "20.0", # 18 points
+            #     "degAngDown": "5", # 13.04m max radius / 1.2m car radius
+            #     "degAngDelta": "-1.0",
+            #     "numSweepsLevels": "1",
+            #     "maxRange": "12.0", # 13.09m is the max distance, max_fps_dist=~1.6m/frame max_speed=~31m/s
+            #     "noise": "0.0",
+            #     "offset_x": "0.0", # 0.8m left/right
+            #     "offset_y": "0.6", # 1.14m down
+            #     "offset_z": "0.0", # 0.9m front / 0.88m back
+            #     "rot_x": "0.0"
+            # },
+            # Lidar config for measuring network delay
+            # "lidar_config": {
+            #     "degPerSweepInc": "360.0", # 18 points
+            #     "degAngDown": "0", # 13.04m max radius / 1.2m car radius
+            #     "degAngDelta": "-1.0",
+            #     "numSweepsLevels": "1",
+            #     "maxRange": "50.0", # 13.09m is the max distance, max_fps_dist=~1.6m/frame max_speed=~31m/s
+            #     "noise": "0.0",
+            #     "offset_x": "0.0", # 0.8m left/right
+            #     "offset_y": "0.6", # 1.14m down
+            #     "offset_z": "0.0", # 0.9m front / 0.88m back
+            #     "rot_x": "0.0"
+            # },
+            "cam_config": {
+                "offset_y": "3.0",
+                "offset_z": "1.4",
+                "rot_x": "45.0",
+                "fov": "90",
+                "img_h": "120",
+                "img_w": "160"
+            }}
+
+IMAGE_H = 120 # default 120
+IMAGE_W = 160 # default 160
 
 AUTO_CREATE_NEW_TUB = True     #create a new tub (tub_YY_MM_DD) directory when recording or append records to data directory directly
 
-TRANSFORMATIONS = ['CROP']
-ROI_CROP_TOP = 45               # the number of rows of pixels to ignore on the top of the image
 CREATE_TF_LITE = False
 
 USE_JOYSTICK_AS_DEFAULT = True      #when starting the manage.py, when True, will not require a --js option to use the joystick
@@ -25,6 +68,7 @@ CONTROLLER_TYPE = 'ps4'            #(ps3|ps4|xbox|nimbus|wiiu|F710|rc3|MM1|custo
 SIM_RECORD_LOCATION = True
 SIM_RECORD_VELOCITY = True
 SIM_RECORD_GYROACCEL = True
+SIM_RECORD_LIDAR = True
 
 #test
 # AUGMENTATIONS = ['CUSTOM']

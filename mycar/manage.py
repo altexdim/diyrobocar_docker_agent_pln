@@ -29,6 +29,8 @@ from donkeycar.parts.throttle_filter import ThrottleFilter
 from donkeycar.parts.behavior import BehaviorPart
 from donkeycar.parts.file_watcher import FileWatcher
 from donkeycar.parts.launch import AiCatapult
+from donkeycar.parts.stuckrecovery import StuckRecovery
+from donkeycar.parts.obstacleavoidance import ObstacleAvoidance
 from donkeycar.pipeline.augmentations import ImageAugmentation
 from donkeycar.utils import *
 
@@ -125,18 +127,13 @@ def drive(cfg, model_path=None, use_joystick=False, model_type=None,
               threaded=True)
 
     else:
-        if cfg.DONKEY_GYM:
-            from donkeycar.parts.dgym import DonkeyGymEnv
-
         inputs = []
         outputs = ['cam/image_array']
         threaded = True
         if cfg.DONKEY_GYM:
-            from donkeycar.parts.dgym import DonkeyGymEnv 
-            #rbx
-            cam = DonkeyGymEnv(cfg.DONKEY_SIM_PATH, host=cfg.SIM_HOST, env_name=cfg.DONKEY_GYM_ENV_NAME, conf=cfg.GYM_CONF, record_location=cfg.SIM_RECORD_LOCATION, record_gyroaccel=cfg.SIM_RECORD_GYROACCEL, record_velocity=cfg.SIM_RECORD_VELOCITY, record_lidar=cfg.SIM_RECORD_LIDAR, delay=cfg.SIM_ARTIFICIAL_LATENCY)
-            threaded = True
-            inputs = ['angle', 'throttle']
+            from donkeycar.parts.dgym import DonkeyGymEnv, DonkeyGymEnvCamera
+            donkey_gym_env = DonkeyGymEnv(cfg.DONKEY_SIM_PATH, host=cfg.SIM_HOST, env_name=cfg.DONKEY_GYM_ENV_NAME, conf=cfg.GYM_CONF, record_location=cfg.SIM_RECORD_LOCATION, record_gyroaccel=cfg.SIM_RECORD_GYROACCEL, record_velocity=cfg.SIM_RECORD_VELOCITY, record_lidar=cfg.SIM_RECORD_LIDAR, delay=cfg.SIM_ARTIFICIAL_LATENCY)
+            cam = DonkeyGymEnvCamera(donkey_gym_env)
         elif cfg.CAMERA_TYPE == "PICAM":
             from donkeycar.parts.camera import PiCamera
             cam = PiCamera(image_w=cfg.IMAGE_W, image_h=cfg.IMAGE_H, image_d=cfg.IMAGE_DEPTH, framerate=cfg.CAMERA_FRAMERATE, vflip=cfg.CAMERA_VFLIP, hflip=cfg.CAMERA_HFLIP)
@@ -206,13 +203,14 @@ def drive(cfg, model_path=None, use_joystick=False, model_type=None,
             V.add(ctr, outputs=['user/angle', 'user/throttle', 'user/mode', 'recording'],threaded=False)
         else:
             if cfg.CONTROLLER_TYPE == "custom":  #custom controller created with `donkey createjs` command
-                from my_joystick import MyJoystickController
-                ctr = MyJoystickController(
-                throttle_dir=cfg.JOYSTICK_THROTTLE_DIR,
-                throttle_scale=cfg.JOYSTICK_MAX_THROTTLE,
-                steering_scale=cfg.JOYSTICK_STEERING_SCALE,
-                auto_record_on_throttle=cfg.AUTO_RECORD_ON_THROTTLE)
-                ctr.set_deadzone(cfg.JOYSTICK_DEADZONE)          
+                # from my_joystick import MyJoystickController
+                # ctr = MyJoystickController(
+                # throttle_dir=cfg.JOYSTICK_THROTTLE_DIR,
+                # throttle_scale=cfg.JOYSTICK_MAX_THROTTLE,
+                # steering_scale=cfg.JOYSTICK_STEERING_SCALE,
+                # auto_record_on_throttle=cfg.AUTO_RECORD_ON_THROTTLE)
+                # ctr.set_deadzone(cfg.JOYSTICK_DEADZONE)
+                raise (Exception("Uncomment the code above this line if you want to use a custom controller"))
             elif cfg.CONTROLLER_TYPE == "MM1":
                 from donkeycar.parts.robohat import RoboHATController            
                 ctr = RoboHATController(cfg)
@@ -512,6 +510,34 @@ def drive(cfg, model_path=None, use_joystick=False, model_type=None,
           inputs=['user/mode', 'throttle', 'angle'],
           outputs=['throttle', 'angle'])
 
+    class ResetBrake:
+        @staticmethod
+        def run():
+            return 0
+
+    V.add(ResetBrake(), inputs=[], outputs=['brake'])
+
+    # TODO : uncomment after ObstacleAvoidance is ready
+    # obstacle_avoidance = ObstacleAvoidance()
+    # V.add(obstacle_avoidance,
+    #       inputs=['user/mode', 'throttle', 'angle', 'pos/speed', 'lidar/dist_array', 'brake'],
+    #       outputs=['throttle', 'angle', 'brake'])
+
+    stuck_recovery = StuckRecovery(
+        recovery_duration=2.2,
+        recovery_throttle=-0.5,
+        recovery_angle=0.0,
+        stuck_duration=0.5)
+    V.add(stuck_recovery,
+          inputs=['user/mode', 'throttle', 'angle', 'pos/speed', 'brake'],
+          outputs=['throttle', 'angle', 'brake'])
+
+    if cfg.DONKEY_GYM:
+        from donkeycar.parts.dgym import DonkeyGymEnvControl
+        # noinspection PyUnboundLocalVariable
+        control = DonkeyGymEnvControl(donkey_gym_env)
+        V.add(control, inputs=['angle', 'throttle', 'brake'], outputs=[], threaded=True)
+
     if (cfg.CONTROLLER_TYPE != "pigpio_rc") and (cfg.CONTROLLER_TYPE != "MM1"):
         if isinstance(ctr, JoystickController):
             ctr.set_button_down_trigger(cfg.AI_LAUNCH_ENABLE_BUTTON, aiLauncher.enable_ai_launch)
@@ -736,13 +762,13 @@ if __name__ == '__main__':
         camera_type = args['--camera']
 
         # TODO: [GPU] if you want enable GPU support for inference then uncomment the code block below
-
-        import tensorflow
-
-        config = tensorflow.compat.v1.ConfigProto()
-        config.gpu_options.allow_growth = True
-        sess = tensorflow.compat.v1.Session(config=config)
-        sess.as_default()
+        #
+        # import tensorflow
+        #
+        # config = tensorflow.compat.v1.ConfigProto()
+        # config.gpu_options.allow_growth = True
+        # sess = tensorflow.compat.v1.Session(config=config)
+        # sess.as_default()
 
         drive(cfg, model_path=args['--model'], use_joystick=args['--js'],
               model_type=model_type, camera_type=camera_type,

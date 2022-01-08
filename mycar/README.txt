@@ -3594,6 +3594,27 @@ ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c change_drive_mode -m lo
 --- stop ---
 ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c stop_container
 
+--- test: run with gpu ---
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13gpu -r "'cd /root/mycar; export PATH=/root/mycar:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_54.h5 --myconfig=myconfig-trnm-user-0_9.py --type=linear'"
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; export PATH=/root/mycar:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_54.h5 --myconfig=myconfig-trnm-user-0_9.py --type=linear'"
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13gpu -r "'cd /root/mycar; export PATH=/root/mycar:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_54.h5 --myconfig=myconfig-trnm-0_9.py --type=linear'"
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v13 -r "'cd /root/mycar; export PATH=/root/mycar:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin; DONKEYCAR_CFG_MAX_LOOPS=2000 python3 manage.py drive --model models/mypilot_circuit_launch_54.h5 --myconfig=myconfig-trnm-0_9.py --type=linear'"
+
+|    KerasLinear GPU    | 63.95  | 8.25 | 11.89 | 11.72 | 13.43 | 15.19 | 60.05 |
+|    KerasLinear CPU    | 52.23  | 9.29 | 12.47 | 12.26 | 14.24 | 16.14 | 18.14 |
+|    KerasLinear GPU    | 32.56  | 6.69 | 11.72 | 11.64 | 13.42 | 15.34 | 17.49 |
+|    KerasLinear CPU    | 166.44 | 9.06 | 12.57 | 12.26 | 14.22 | 16.18 | 63.43 |
+
+================================================================================================================
+3 Sep 2021: select new cam view; try the model with the new cam
+----------------------------------------------------------------------------------------------------------------
+python train.py \
+    --model models/mypilot_circuit_launch_100.h5 \
+    --tubs=data/tub_584_21-09-06_test_new_cam
+
+very bad model - maybe because of very bad data?
+why not create an ideal path, and collect data from it?
+
 ================================================================================================================
 TODO
 ----------------------------------------------------------------------------------------------------------------
@@ -3607,6 +3628,21 @@ TODO
 - drive 1 line + 2 line + mid line, then transfer model to race dataset
 - histogram
 - add fps counter on inference
+- change print to log output for cfg env, and for AiCatapult
+    from logging import getLogger
+    logger = logging.getLogger()
+    logger.info(f'Loaded')
+- add timestamp when crossing the line, for AiCatapult
+- to test camera changes - png, rotate, move up
+    GYM_CONF["cam_config"] = {}
+    GYM_CONF["cam_config"]["img_enc"] = "PNG"
+    GYM_CONF["cam_config"]["offset_y"] = "3.0"
+    GYM_CONF["cam_config"]["offset_z"] = "1.2"
+    GYM_CONF["cam_config"]["rot_x"] = "50.0"
+    GYM_CONF["cam_config"]["fov"] = "72"
+    GYM_CONF["cam_config"]["img_h"] = "96"
+    GYM_CONF["cam_config"]["img_w"] = "200"
+- Pull requests
 
 ~~~~IDEAS~~~~
 - try inference with GPU acceleration
@@ -3629,3 +3665,120 @@ TODO
 - video is not working with CROP
 - inference is not using GPU
 - simulation sometimes runs slow - slowing down PC, restart of simulation helps
+
+========================================
+27 Dec 2021: new track, new sim
+---------------------
+
+GYM_CONF["cam_config"]["offset_y"] = "3.0" # default 0
+GYM_CONF["cam_config"]["offset_z"] = "1.4" # default 0
+GYM_CONF["cam_config"]["rot_x"] = "45.0" # default 0
+GYM_CONF["cam_config"]["fov"] = "90" # default 90
+GYM_CONF["cam_config"]["img_h"] = "120" # default 120
+GYM_CONF["cam_config"]["img_w"] = "160" # default 160
+IMAGE_H = 120 # default 120
+IMAGE_W = 160 # default 160
+
+# collect data
+python manage.py drive
+# train
+python train.py --model models/mypilot_mountain_1.h5 --tubs=data/tub_1_good,data/tub_2_good,data/tub_3_good --type=linear
+# test manually
+python manage.py drive --model models/mypilot_mountain_1.h5 --type=linear
+# test automatically, tweak ai_launcher
+DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=1.1 DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"' python manage.py drive --model models/mypilot_mountain_1.h5 --type=linear
+
+DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=1.1 DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"' python manage.py drive --model models/mypilot_mountain_1.h5 --type=linear
+
+--------------
+0.5-0.8 - dnf
+-- stable --
+0.9 - 62.71
+1.0 - 60.47 60.37
+>>> best stable >>> 1.1 - 59.97 59.95 60.05 59.81 60.01 59.76 59.79 60.04 ~ 59.92
+1.2 - 59.43 59.70 59.56 59.90 59.62 59.65 59.72 59.69 59.74 ~ 59.67
+1.3 -xx- 59.26 59.18 59.57 59.14
+1.4 -xx- 59.09 59.06 59.33
+1.5 -xx- 58.90 58.95
+1.6 -- 58.90 -- dnf
+1.7 -xxx- 58.92 -- 59.12
+1.8 -xxx- 58.75 dnf
+1.9 -xxx- 58.56 58.60
+>>> unstable fastest >>> 2.0 -xxx- 58.39 58.35
+2.1 - 58.31 58.47 dnf 58.35
+-- unstable --
+2.2 - 58.70 --
+2.3 - dnf   -- 
+2.4 - dnf   -- 
+2.5 - 58.56 -- 
+2.6 - dnf   --
+2.7 - 58.75 --
+2.8 - 58.51 --
+2.9 - dnf   -- 
+3.0 - 58.66 --
+
+-1.1-------
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=21.10 lap_time=21.10
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=40.57 lap_time=19.47
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=60.09 lap_time=19.52
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=4 total_time=79.49 lap_time=19.40
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=5 total_time=98.95 lap_time=19.46
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=6 total_time=118.33 lap_time=19.38
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=7 total_time=137.79 lap_time=19.46
+
+-2.0-------
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=1 total_time=20.60 lap_time=20.60
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=2 total_time=39.45 lap_time=18.85
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=3 total_time=58.45 lap_time=19.00
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=4 total_time=77.39 lap_time=18.94
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=5 total_time=96.33 lap_time=18.94
+INFO:gym_donkeycar.envs.donkey_sim:CollisionWithStartingLine: lap_number=6 total_time=115.27 lap_time=18.94
+
+export TF_FORCE_GPU_ALLOW_GROWTH='true'
+python train.py --model models/mypilot_mountain_2.h5 --tubs=data/tub_1_good,data/tub_2_good,data/tub_3_good,data/tub_4_good,data/tub_5_good --type=linear
+DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=1.0 DONKEYCAR_CFG_AI_LAUNCH_DURATION=0 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=False DONKEYCAR_CFG_WEB_INIT_MODE='"local"' python manage.py drive --model models/mypilot_mountain_2.h5 --type=linear
+DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=1.0 DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"' python manage.py drive --model models/mypilot_mountain_2.h5 --type=linear
+
+for i in 0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2.0 2.1 2.2 2.3 2.4 2.5 2.6 2.7 2.8 2.9 3.0; do echo ----$i----; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=$i DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"' python manage.py drive --model models/mypilot_mountain_2.h5 --type=linear; done
+
+0.5 - dnf
+0.6 - dnf
+0.7 - dnf
+0.8 - dnf
+0.9 - 61.78 + 61.70 
+1.0 - 59.62 + 59.58 + 59.70 + 59.68
+1.1 - 59.10 + 59.03 + 59.04 + 58.97
+1.2 - 58.87 + 58.73 + dnf
+1.3 - 58.59 + 58.82 + 58.70 + 58.66
+1.4 - 58.45 + 58.65 + 58.55 + 58.57
+1.5 - 58.30 + 58.29 + 58.49 + 58.30 - best fastest
+1.6 - 58.53 + 58.09 + 58.42 + 58.32
+1.7 - 58.53 + 58.35 + 58.48 + 58.44
+1.8 - 58.47 + dnf
+1.9 - dnf
+2.0 - dnf
+2.1 - 58.26 + 58.44
+2.2 - dnf
+2.3 - 58.23 + 58.30
+2.4 - 58.55 + 58.45
+2.5 - 58.56 + 58.34
+2.6 - dnf
+2.7 - 58.34 + 58.82
+2.8 - 58.52 + dnf
+2.9 - 58.09 + dnf
+3.0 - 58.30 + 58.45
+
+for i in 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 2.1 2.3 2.4 2.5 2.7 2.8 2.9 3.0; do echo ----$i----; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=$i DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"' python manage.py drive --model models/mypilot_mountain_2.h5 --type=linear; done
+
+for i in 1.0 1.1 1.3 1.4 1.5 1.6 1.7; do echo ----$i----; DONKEYCAR_CFG_MAX_LOOPS=3900 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=$i DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"' python manage.py drive --model models/mypilot_mountain_2.h5 --type=linear; done
+
+DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=1.5 DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"' python manage.py drive --model models/mypilot_mountain_2.h5 --type=linear
+
+# 1. copy mycar to docker repo
+# 2. update tag
+vim pln-docker-compose.yml
+# 3. rebuild
+docker-compose -f ./pln-docker-compose.yml up --build --no-start
+# 4. push changes to dockerhub
+docker login
+docker push altexdim/donkeycar_race2:v8jan22a
