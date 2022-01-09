@@ -1,10 +1,26 @@
-# ==== my ====
+# ==== Different variants for tournaments ====
+# --- local testing config ---
+# USE_JOYSTICK_AS_DEFAULT = True      #when starting the manage.py, when True, will not require a --js option to use the joystick
+# SIM_HOST = "127.0.0.1"
 
+# --- tournament config, docker container, local testing, autostart ---
+USE_JOYSTICK_AS_DEFAULT=False
+AI_THROTTLE_MULT=1.5
+AI_LAUNCH_DURATION=3.25
+AI_LAUNCH_THROTTLE=1.0
+AI_LAUNCH_KEEP_ENABLED=True
+# WEB_INIT_MODE="local"
+# SIM_HOST = "127.0.0.1"
+
+# --- tournament config, docker container, production ready, no autostart ---
+WEB_INIT_MODE="user"
+SIM_HOST = "donkey-sim.roboticist.dev"
+
+# ==== my config, common part for local testing, training, and tournament ====
 DONKEY_GYM = True
 DONKEY_SIM_PATH = "remote" #"/home/tkramer/projects/sdsandbox/sdsim/build/DonkeySimLinux/donkey_sim.x86_64" when racing on virtual-race-league use "remote", or user "remote" when you want to start the sim manually first.
-SIM_HOST = "127.0.0.1"              # when racing on virtual-race-league use host "trainmydonkey.com"
 DONKEY_GYM_ENV_NAME = "donkey-mountain-track-v0"
-# body_style: donkey|bare|car01|f1|cybertruck
+# body_style: donkey|bare|car01
 # body_rgb : 0-255
 # good orange colors: (254, 96, 2)=orange (243, 82, 41)=salmon-orange (254, 92, 19)=plastic-orange
 GYM_CONF = {"body_style": "car01",
@@ -59,7 +75,6 @@ AUTO_CREATE_NEW_TUB = True     #create a new tub (tub_YY_MM_DD) directory when r
 
 CREATE_TF_LITE = False
 
-USE_JOYSTICK_AS_DEFAULT = True      #when starting the manage.py, when True, will not require a --js option to use the joystick
 JOYSTICK_MAX_THROTTLE = 1.0         #this scalar is multiplied with the -1 to 1 throttle value to limit the maximum throttle. This can help if you drop the controller or just don't need the full speed available.
 JOYSTICK_STEERING_SCALE = 1.0       #some people want a steering that is less sensitve. This scalar is multiplied with the steering -1 to 1. It can be negative to reverse dir.
 AUTO_RECORD_ON_THROTTLE = False      #if true, we will record whenever throttle is not zero. if false, you must manually toggle recording with some other trigger. Usually circle button on joystick.
