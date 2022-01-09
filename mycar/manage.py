@@ -172,7 +172,8 @@ def drive(cfg, model_path=None, use_joystick=False, model_type=None,
                 outputs += ['vel/vel_x', 'vel/vel_y', 'vel/vel_z']
             if cfg.SIM_RECORD_LIDAR:
                 outputs += ['lidar/dist_array']
-            
+            outputs += ['car']
+
         V.add(cam, inputs=inputs, outputs=outputs, threaded=threaded)
 
     # add lidar
@@ -529,7 +530,7 @@ def drive(cfg, model_path=None, use_joystick=False, model_type=None,
         recovery_angle=0.0,
         stuck_duration=0.5)
     V.add(stuck_recovery,
-          inputs=['user/mode', 'throttle', 'angle', 'pos/speed', 'brake'],
+          inputs=['user/mode', 'throttle', 'angle', 'pos/speed', 'brake', 'pos/pos_x', 'pos/pos_y', 'pos/pos_z', 'car'],
           outputs=['throttle', 'angle', 'brake'])
 
     if cfg.DONKEY_GYM:
