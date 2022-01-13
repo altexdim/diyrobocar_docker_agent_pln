@@ -78,10 +78,10 @@ SIM_RECORD_LIDAR = True
 # ---- train with 12/.0000001 ----
 # ---- train with 12/.0005 ----
 # ---- train with 5/.0005 ----
-#EARLY_STOP_PATIENCE = 12         #how many epochs to wait before no improvement
-#MIN_DELTA = .0000001               #early stop will want this much loss change before calling it improved.
-EARLY_STOP_PATIENCE = 5         #how many epochs to wait before no improvement
-MIN_DELTA = .0005               #early stop will want this much loss change before calling it improved.
+EARLY_STOP_PATIENCE = 12         #how many epochs to wait before no improvement
+MIN_DELTA = .0000001               #early stop will want this much loss change before calling it improved.
+#EARLY_STOP_PATIENCE = 5         #how many epochs to wait before no improvement
+#MIN_DELTA = .0005               #early stop will want this much loss change before calling it improved.
 
 # ==== orig ====
 
