@@ -3863,18 +3863,33 @@ sleep 3; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=Fals
 -- 2 -- not very stable
 for i in 0 1 2 3; do sleep $i; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=1.5 DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"' python manage.py drive --model models/mypilot_mountain_2.h5 --type=linear & done
 
+for i in 0 1 2 3; do sleep $i; docker run --rm --network=host -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v8jan22a" bash -c "cd /root/mycar; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_AI_THROTTLE_MULT=1.5 DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 python manage.py drive --model models/mypilot_mountain_2.h5 --type=linear --myconfig=myconfig-docker-local.py 2>&1 | grep CollisionWithStartingLine" & done
+
 -- 2_1 -- not very stable
 for i in 0 1 2 3; do sleep $i; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=1.5 DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"' python manage.py drive --model models/mypilot_mountain_2_1.h5 --type=linear & done
+
+for i in 0 1 2 3; do sleep $i; docker run --rm --network=host -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v8jan22a" bash -c "cd /root/mycar; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_AI_THROTTLE_MULT=1.5 DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 python manage.py drive --model models/mypilot_mountain_2_1.h5 --type=linear --myconfig=myconfig-docker-local.py 2>&1 | grep CollisionWithStartingLine" & done
 
 -- 5 -- not stable
 for i in 0 1 2 3; do sleep $i; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=1.3 DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"' python manage.py drive --model models/mypilot_mountain_5.h5 --type=linear & done
 
+for i in 0 1 2 3; do sleep $i; docker run --rm --network=host -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v8jan22a" bash -c "cd /root/mycar; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_AI_THROTTLE_MULT=1.3 DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 python manage.py drive --model models/mypilot_mountain_5.h5 --type=linear --myconfig=myconfig-docker-local.py 2>&1 | grep CollisionWithStartingLine" & done
+
 -- 5_1 -- not stable
 for i in 0 1 2 3; do sleep $i; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=1.3 DONKEYCAR_CFG_AI_LAUNCH_DURATION=2.5 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"' python manage.py drive --model models/mypilot_mountain_5_1.h5 --type=linear & done
+
+for i in 0 1 2 3; do sleep $i; docker run --rm --network=host -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v8jan22a" bash -c "cd /root/mycar; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_AI_THROTTLE_MULT=1.3 DONKEYCAR_CFG_AI_LAUNCH_DURATION=2.5 python manage.py drive --model models/mypilot_mountain_5_1.h5 --type=linear --myconfig=myconfig-docker-local.py 2>&1 | grep CollisionWithStartingLine" & done
 
 -- 2_5_1 -- stable
 for i in 0 1 2 3; do sleep $i; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=1.2 DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"' python manage.py drive --model models/mypilot_mountain_2_5_1.h5 --type=linear 2>&1 | grep CollisionWithStartingLine & done
 
+for i in 0 1 2 3; do sleep $i; docker run --rm --network=host -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v8jan22a" bash -c "cd /root/mycar; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_AI_THROTTLE_MULT=1.2 python manage.py drive --model models/mypilot_mountain_2_5_1.h5 --type=linear --myconfig=myconfig-docker-local.py 2>&1 | grep CollisionWithStartingLine" & done
+
+
+docker run --rm --network host araffin/rl-racing-robot:2.1 bash -c 'cd /root/code/rl_zoo/ && OMP_NUM_THREADS=1 RACE=True python enjoy.py --algo tqc --env donkey-generated-track-v0 -f logs/ -n 1000000 --env-kwargs test_mode:True color:"'\''orange'\''" ae_path:"'\''/root/code/ae_mountain_22_1.pkl'\''" level:"'\''mountain_track'\''" car_name:"'\''RL-Racing-Robot'\''" --exp-id 6 --load-checkpoint 1425000' &
+sleep 3; docker run --rm --network=host -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v8jan22a" bash -c "cd /root/mycar; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_AI_THROTTLE_MULT=1.2 python manage.py drive --model models/mypilot_mountain_2_5_1.h5 --type=linear --myconfig=myconfig-docker-local.py 2>&1 | grep CollisionWithStartingLine" &
+sleep 2; docker run --rm --network host araffin/rl-racing-robot:2.1 bash -c 'cd /root/code/rl_zoo/ && OMP_NUM_THREADS=1 RACE=True python enjoy.py --algo tqc --env donkey-generated-track-v0 -f logs/ -n 1000000 --env-kwargs test_mode:True color:"'\''orange'\''" ae_path:"'\''/root/code/ae_mountain_22_1.pkl'\''" level:"'\''mountain_track'\''" car_name:"'\''RL-Racing-Robot'\''" --exp-id 6 --load-checkpoint 1425000' &
+sleep 4; docker run --rm --network=host -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v8jan22a" bash -c "cd /root/mycar; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_AI_THROTTLE_MULT=1.2 python manage.py drive --model models/mypilot_mountain_2_5_1.h5 --type=linear --myconfig=myconfig-docker-local.py 2>&1 | grep CollisionWithStartingLine" &
 ---------
 export TF_FORCE_GPU_ALLOW_GROWTH='true'
 python train.py --model models/mypilot_mountain_2_5_1.h5 --tubs=data/good1/tub_1_good,data/good1/tub_2_good,data/good1/tub_3_good,data/good1/tub_4_good,data/good1/tub_5_good,data/good2/tub_01_good,data/good2/tub_02_good,data/good2/tub_03_good,data/good2/tub_04_good --type=linear
@@ -3892,3 +3907,7 @@ for i in 0 1 2 3; do sleep $i; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JO
 ------
 need some correction data for the 5_1 model to make it faster than 2_5_1
 
+export TF_FORCE_GPU_ALLOW_GROWTH='true'
+python train.py --model models/mypilot_mountain_5_3.h5 --tubs=data/good2/tub_01_good,data/good2/tub_02_good,data/good2/tub_03_good,data/good2/tub_04_good,data/good2/tub_02_corrections,data/good2/tub_03_corrections --type=linear
+
+for i in 0 1 2 3; do sleep $i; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=1.3 DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"' python manage.py drive --model models/mypilot_mountain_5_3.h5 --type=linear 2>&1 | grep CollisionWithStartingLine & done
