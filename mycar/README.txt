@@ -3911,3 +3911,52 @@ export TF_FORCE_GPU_ALLOW_GROWTH='true'
 python train.py --model models/mypilot_mountain_5_3.h5 --tubs=data/good2/tub_01_good,data/good2/tub_02_good,data/good2/tub_03_good,data/good2/tub_04_good,data/good2/tub_02_corrections,data/good2/tub_03_corrections --type=linear
 
 for i in 0 1 2 3; do sleep $i; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=1.3 DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"' python manage.py drive --model models/mypilot_mountain_5_3.h5 --type=linear 2>&1 | grep CollisionWithStartingLine & done
+
+--- run ---
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v8jan22a -r "'cd /root/mycar;  DONKEYCAR_CFG_AI_THROTTLE_MULT=1.2 python manage.py drive --model models/mypilot_mountain_2_5_1.h5 --type=linear --myconfig=myconfig-docker-trnm.py'"
+
+> 19.25 19.35 
+
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v8jan22a -r "'cd /root/mycar;  DONKEYCAR_CFG_AI_THROTTLE_MULT=1.3 python manage.py drive --model models/mypilot_mountain_5.h5 --type=linear --myconfig=myconfig-docker-trnm.py'"
+
+> 18.95 - dnf - 18.87 18.94
+
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v8jan22a -r "'cd /root/mycar;  DONKEYCAR_CFG_AI_THROTTLE_MULT=1.5 python manage.py drive --model models/mypilot_mountain_2.h5 --type=linear --myconfig=myconfig-docker-trnm.py'"
+
+> 19.01 19.05 19.05
+
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v8jan22a -r "'cd /root/mycar;  DONKEYCAR_CFG_AI_THROTTLE_MULT=1.5 python manage.py drive --model models/mypilot_mountain_2_1.h5 --type=linear --myconfig=myconfig-docker-trnm.py'"
+
+> 19.02 19.08 19.06
+
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v8jan22a -r "'cd /root/mycar;  DONKEYCAR_CFG_AI_THROTTLE_MULT=1.3 DONKEYCAR_CFG_AI_LAUNCH_DURATION=2.5 python manage.py drive --model models/mypilot_mountain_5_1.h5 --type=linear --myconfig=myconfig-docker-trnm.py'"
+
+> 19.10 19.14
+
+--- start ---
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c change_drive_mode -m local
+
+--- stop ---
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c stop_container
+
+==== 11 Apr 2022 ====
+
+1. collect data
+
+cd /home/altex/projects/mycar
+conda activate donkey
+/home/altex/projects/DonkeySimLinux/donkey_sim.x86_64
+python manage.py drive
+
+2. train
+
+python train.py --model models/altex_mountain_2.h5 --tubs=data/tub1,data/tub2,data/tub3,data/tub4 --type=linear
+
+3. test
+
+DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=1.0 DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"'  python manage.py drive --model models/altex_mountain_2.h5 --type=linear
+
+for i in 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6; do sleep $i; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=$i DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"'  python manage.py drive --model models/altex_mountain_2.h5 --type=linear 2>&1 | grep total_time & done
+
+for i in 1.3 1.3 1.3; do sleep $i; echo $i; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=$i DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"'  python manage.py drive --model models/altex_mountain_2.h5 --type=linear 2>&1 | grep total_time; done
+

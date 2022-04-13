@@ -12,5 +12,5 @@ services:
     network_mode: "host"
     ports:
       - "8887:8887"
-    image: altexdim/donkeycar_race2:v8jan22a
+    image: altexdim/donkeycar_race2:v16apr22a
     entrypoint: bash
