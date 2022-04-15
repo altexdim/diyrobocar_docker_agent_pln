@@ -3951,12 +3951,38 @@ python manage.py drive
 2. train
 
 python train.py --model models/altex_mountain_2.h5 --tubs=data/tub1,data/tub2,data/tub3,data/tub4 --type=linear
+python train.py --model models/altex_mountain_3.h5 --tubs=data/tub5 --type=linear
 
 3. test
 
 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=1.0 DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"'  python manage.py drive --model models/altex_mountain_2.h5 --type=linear
+DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=1.0 DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"'  python manage.py drive --model models/altex_mountain_3.h5 --type=linear
 
-for i in 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6; do sleep $i; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=$i DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"'  python manage.py drive --model models/altex_mountain_2.h5 --type=linear 2>&1 | grep total_time & done
+for i in 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6; do echo ---- $i ----; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=$i DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"' python manage.py drive --model models/altex_mountain_3.h5 --type=linear 2>&1 | grep total_time; done
 
 for i in 1.3 1.3 1.3; do sleep $i; echo $i; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=$i DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"'  python manage.py drive --model models/altex_mountain_2.h5 --type=linear 2>&1 | grep total_time; done
+for i in 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6; do echo ---- $i ----; DONKEYCAR_CFG_MAX_LOOPS=1300 DONKEYCAR_CFG_USE_JOYSTICK_AS_DEFAULT=False DONKEYCAR_CFG_AI_THROTTLE_MULT=$i DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 DONKEYCAR_CFG_AI_LAUNCH_THROTTLE=1.0 DONKEYCAR_CFG_AI_LAUNCH_KEEP_ENABLED=True DONKEYCAR_CFG_WEB_INIT_MODE='"local"' python manage.py drive --model models/altex_mountain_3.h5 --type=linear 2>&1 | grep total_time; done
 
+# 1. copy mycar to docker repo
+done
+# 2. update tag
+vim pln-docker-compose.yml
+# 3. rebuild
+docker-compose -f ./pln-docker-compose.yml up --build --no-start
+# 4. push changes to dockerhub
+docker login
+docker push altexdim/donkeycar_race2:v16apr22a
+
+# 5. run locally for testing (auto start)
+docker run -it --rm --name "donkeysim_altex" --network=host -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v16apr22a" bash -c "cd /root/mycar; python manage.py drive --model models/mypilot_mountain_2.h5 --type=linear --myconfig=myconfig-docker-local.py"
+# 6. run remotely for production (manual start)
+docker run -it --rm --name "donkeysim_altex" --network=host -p "127.0.0.1:18887:8887" "altexdim/donkeycar_race2:v16apr22a" bash -c "cd /root/mycar; python manage.py drive --model models/mypilot_mountain_2.h5 --type=linear --myconfig=myconfig-docker-trnm.py"
+
+--- run ---
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c start_container -t v16apr22a -r "'cd /root/mycar; DONKEYCAR_CFG_AI_THROTTLE_MULT=1.3 DONKEYCAR_CFG_AI_LAUNCH_DURATION=3.25 python manage.py drive --model models/altex_mountain_2.h5 --type=linear --myconfig=myconfig-docker-trnm.py'"
+
+--- start ---
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c change_drive_mode -m local
+
+--- stop ---
+ssh -p22222 -T dockerusr@donkey-sim.roboticist.dev -- -c stop_container
